@@ -1,0 +1,1173 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="redis教程 一、 NoSQL数据库简介  SQL和NoSQL之间的比较 NoSQL的好处：  减少CPU的压力：用多台服务器，会导致session的共享问题（被一台服务器绑定，而其他服务器没有session不能登录） –&gt;方法：1.信息存储到客户端cookie中（安全性难做保障） ​                2.session复制（服务器浪费） ​                3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis笔记">
+<meta property="og:url" content="https://yoursite.com/2022/02/12/Redis/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="redis教程 一、 NoSQL数据库简介  SQL和NoSQL之间的比较 NoSQL的好处：  减少CPU的压力：用多台服务器，会导致session的共享问题（被一台服务器绑定，而其他服务器没有session不能登录） –&gt;方法：1.信息存储到客户端cookie中（安全性难做保障） ​                2.session复制（服务器浪费） ​                3">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211024203354717.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211024205916927.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211024210210378.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211024211754446.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211028224853649.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211030193337884.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211030115309171.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211030115324742.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211030120039489.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211101094002358.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211101095828217.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211101095800767.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211101111855203.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211101211942535.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211101185837827.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211101191148721.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211102102246066.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/aof重写.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211103201313192.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211103220423448.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211104233211918.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211104232431180.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211104232454698.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/Redis%5Cimage-20211104234427526.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211109154034550.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211109154251588.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211109154533925.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211109160056468.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211110101631973.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211110101616711.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211110101825743-1636527404596.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/集群存储通讯设计.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211110134612200.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211110135519669.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211110135444856.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211110135932299.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/12/Redis/image-20211110140510889.png">
+<meta property="article:published_time" content="2022-02-12T08:50:52.000Z">
+<meta property="article:modified_time" content="2022-02-12T09:07:07.171Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yoursite.com/2022/02/12/Redis/image-20211024203354717.png">
+  
+  
+  <title>Redis笔记 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Twinkle&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Redis笔记">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-12 16:50" pubdate>
+        2022年2月12日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      24k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      197 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Redis笔记</h1>
+            
+            <div class="markdown-body">
+              <p><a target="_blank" rel="noopener" href="http://www.redisfans.com/">redis教程</a></p>
+<h1 id="一、-NoSQL数据库简介"><a href="#一、-NoSQL数据库简介" class="headerlink" title="一、 NoSQL数据库简介"></a>一、 NoSQL数据库简介</h1><img src="/2022/02/12/Redis/image-20211024203354717.png" srcset="/img/loading.gif" lazyload alt="image-20211024203354717 " style="zoom:60%;">
+
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xrq730/p/11039384.html">SQL和NoSQL之间的比较</a></p>
+<p>NoSQL的好处：</p>
+<ul>
+<li><p>减少CPU的压力：用多台服务器，会导致session的共享问题（被一台服务器绑定，而其他服务器没有session不能登录）</p>
+<p>–&gt;方法：1.信息存储到客户端cookie中（安全性难做保障）</p>
+<p>​                2.session复制（服务器浪费）</p>
+<p>​                3.将session用户信息保存在<strong>NoSQL数据库</strong>中，其他服务器需要登录时提取出来</p>
+</li>
+<li><p>减少IO压力：</p>
+<ul>
+<li>使用NoSQL缓存存储，针对那些读远多于写的数据，引入一层缓存，每次读从缓存中读取，缓存中读取不到，再去数据库中取，取完之后再写入到缓存，对数据做好失效机制通常就没有大问题了。</li>
+<li>列式存储(HBase)、文档存储（MongoDB）</li>
+</ul>
+<img src="/2022/02/12/Redis/image-20211024205916927.png" srcset="/img/loading.gif" lazyload alt="image-20211024205916927 " style="zoom:70%;">
+
+<p>使用Nginx动态分配服务器，负载均衡，当业务多时，可使用主从数据库（库<strong>水平切分</strong>、表<strong>垂直切分</strong>），<strong>读写分离</strong></p>
+</li>
+</ul>
+<img src="/2022/02/12/Redis/image-20211024210210378.png" srcset="/img/loading.gif" lazyload alt="image-20211024210210378 " style="zoom:67%;">
+
+<h2 id="1、NoSQL-Not-Only-SQL-非关系型数据库"><a href="#1、NoSQL-Not-Only-SQL-非关系型数据库" class="headerlink" title="1、NoSQL(Not Only SQL)  非关系型数据库"></a>1、NoSQL(Not Only SQL)  非关系型数据库</h2><ul>
+<li>不遵循SQL标准</li>
+<li>&#x3D;&#x3D;不支持ACID（事务四大特性：<strong>原子性、一致性、隔离性、持久性</strong>）&#x3D;&#x3D;</li>
+<li>远超SQL性能</li>
+</ul>
+<h2 id="2、-NoSQL适用场景"><a href="#2、-NoSQL适用场景" class="headerlink" title="2、 NoSQL适用场景"></a>2、 NoSQL适用场景</h2><ul>
+<li>数据高并发的读写</li>
+<li>海量数据的读写</li>
+<li>数据高扩展性</li>
+</ul>
+<h2 id="3、一些NoSQL"><a href="#3、一些NoSQL" class="headerlink" title="3、一些NoSQL"></a>3、一些NoSQL</h2><img src="/2022/02/12/Redis/image-20211024211754446.png" srcset="/img/loading.gif" lazyload alt="image-20211024211754446 " style="zoom:67%;">
+
+<h3 id="1-Memcache"><a href="#1-Memcache" class="headerlink" title="(1) Memcache"></a>(1) Memcache</h3><p>早期NoSQL，数据在内存中，且一般不持久化（不落盘），支持简单的key-value模式，支持类型单一，作为缓存数据库辅助持久化的数据库</p>
+<h3 id="2-Redis"><a href="#2-Redis" class="headerlink" title="(2) Redis"></a>(2) Redis</h3><p>覆盖了Memcache的大部分功能</p>
+<p>数据都在内存中，<strong>支持持久化</strong>，主要备份恢复</p>
+<p>除了支持<strong>key-value</strong>模式，还支持多种数据结构的存储，比如<strong>string（字符串）、list（链表）、set（集合）、hash（哈希类型）、zset（sorted set有序集合）</strong>等</p>
+<p>实现<strong>主从同步</strong>（master-slave）</p>
+<p>一般是作为缓存数据库辅助持久化的数据库（和关系型数据库一起使用）</p>
+<h3 id="3-MongoDB"><a href="#3-MongoDB" class="headerlink" title="(3) MongoDB"></a>(3) MongoDB</h3><p><strong>文档型数据库</strong></p>
+<p>key-value模式，尤其对value（特别是json）提供了丰富的查询功能</p>
+<p>支持二进制数据及大型对象</p>
+<h2 id="4、-安装（ubuntu）"><a href="#4、-安装（ubuntu）" class="headerlink" title="4、 安装（ubuntu）"></a>4、 安装（ubuntu）</h2><h3 id="1-步骤"><a href="#1-步骤" class="headerlink" title="(1) 步骤"></a>(1) 步骤</h3><p>安装gcc：sudo apt install gcc</p>
+<p>解压文件：tar xzf redis-6.2.6.tar.gz</p>
+<p>sudo mv redis-6.2.6 &#x2F;usr&#x2F;local&#x2F;redis</p>
+<p>cd &#x2F;usr&#x2F;local&#x2F;redis&#x2F;</p>
+<p>sudo make</p>
+<p>sudo make test</p>
+<p>sudo make install</p>
+<p>将redis.conf文件放进&#x2F;etc&#x2F;文件夹中，并修改redis.conf文件：deamonize yes</p>
+<p>启动redis:</p>
+<p>cd &#x2F;usr&#x2F;local&#x2F;bin</p>
+<p>redis-server &#x2F;etc&#x2F;redis.conf</p>
+<p>redis-cli</p>
+<p>查看进程：</p>
+<p>ps -ef | grep  redis</p>
+<p>手动杀死进程：</p>
+<p>kill -9 XXX（redis-server进程号）</p>
+<p>创建redis-log.log文件，并给权限</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><pre><code class="hljs 1c"><span class="hljs-meta"># 创建存放redis日志的文件</span><br>touch redis-<span class="hljs-built_in">log</span>.<span class="hljs-built_in">log</span><br><span class="hljs-meta"># 给所有人可读可写的权限</span><br>chmod <span class="hljs-number">666</span> redis-<span class="hljs-built_in">log</span>.<span class="hljs-built_in">log</span><br><span class="hljs-meta"># 在redis.conf文件中修改logfile的位置</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-端口：6379（Merz）"><a href="#2-端口：6379（Merz）" class="headerlink" title="(2)端口：6379（Merz）"></a>(2)端口：6379（Merz）</h3><p>有16个数据库，默认使用0号数据库</p>
+<p>select <dbid>切换数据库</dbid></p>
+<p>所有数据库的密码是相同的</p>
+<h3 id="3-单线程-多路IO复用"><a href="#3-单线程-多路IO复用" class="headerlink" title="(3) 单线程+多路IO复用"></a>(3) 单线程+多路IO复用</h3><p>当没有数据读写的时候，cpu一直在做其他的事情</p>
+<h1 id="二、数据类型"><a href="#二、数据类型" class="headerlink" title="二、数据类型"></a>二、数据类型</h1><h2 id="一-五大常用数据类型"><a href="#一-五大常用数据类型" class="headerlink" title="(一) 五大常用数据类型"></a>(一) 五大常用数据类型</h2><p>关于key的几个命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs linux">//设置key和value<br>set key value<br>//判断某个key是否存在<br>exists key<br>//查看key的类型<br>type key<br>//删除指定的key<br>del key<br>//根据value选择非阻塞删除<br>unlink key<br>//为给定的key设置过期时间(10为秒数)<br>expire key 10<br>//查看还有多少秒过期，-1表示永不过期，-2表示已经过期<br>ttl key<br>//查看所有的key<br>keys *<br><br>//切换数据库<br>select index<br>//查看当前数据库的key的数量<br>dbsize<br>//清空当前库<br>flushdb<br>//通杀全部库<br>flushall<br></code></pre></td></tr></table></figure>
+
+<h2 id="1-String"><a href="#1-String" class="headerlink" title="1.String"></a>1.String</h2><p>二进制安全</p>
+<p>value字符串最多512M</p>
+<h3 id="1-常用命令"><a href="#1-常用命令" class="headerlink" title="(1) 常用命令"></a>(1) 常用命令</h3><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">set</span> <span class="hljs-symbol">&lt;key&gt;</span> <span class="hljs-symbol">&lt;value&gt;</span>   key相同时，value覆盖<br>setnx <span class="hljs-symbol">&lt;key&gt;</span> <span class="hljs-symbol">&lt;value&gt;</span> 只有在key不存在的时候设置key的value，即value不覆盖<br><span class="hljs-built_in">get</span> <span class="hljs-symbol">&lt;key&gt;</span><br><span class="hljs-keyword">append</span> <span class="hljs-symbol">&lt;key&gt;</span> <span class="hljs-symbol">&lt;value&gt;</span>，将给定的value值追加到原值的末尾<br><span class="hljs-built_in">strlen</span> <span class="hljs-symbol">&lt;key&gt;</span> 获得value的长度<br><br>incr/decr <span class="hljs-symbol">&lt;key&gt;</span>	如果value是数值型，则加/减<span class="hljs-number">1</span><br>incrby/decrby <span class="hljs-symbol">&lt;key&gt;</span> &lt;步长&gt;<br><br>mset <span class="hljs-symbol">&lt;key1&gt;</span> <span class="hljs-symbol">&lt;value1&gt;</span> <span class="hljs-symbol">&lt;key2&gt;</span> <span class="hljs-symbol">&lt;value2&gt;</span> <span class="hljs-symbol">&lt;key3&gt;</span> <span class="hljs-symbol">&lt;value3&gt;</span>...  设置多个<br>mget <span class="hljs-symbol">&lt;key1&gt;</span> <span class="hljs-symbol">&lt;key2&gt;</span> <span class="hljs-symbol">&lt;key3&gt;</span>...		得到多个<br>msetnx <span class="hljs-symbol">&lt;key1&gt;</span> <span class="hljs-symbol">&lt;value1&gt;</span> <span class="hljs-symbol">&lt;key2&gt;</span> <span class="hljs-symbol">&lt;value2&gt;</span> <span class="hljs-symbol">&lt;key3&gt;</span> <span class="hljs-symbol">&lt;value3&gt;</span>...	当都不存在时，才会赋值成功<br>	<br>getrange <span class="hljs-symbol">&lt;key&gt;</span> <span class="hljs-symbol">&lt;start_index&gt;</span> <span class="hljs-symbol">&lt;end_index&gt;</span>	类似java的substring，前包后包<br>setrange <span class="hljs-symbol">&lt;key&gt;</span> <span class="hljs-symbol">&lt;start_index&gt;</span>	从start_index开始覆盖value<br><br>setex <span class="hljs-symbol">&lt;key&gt;</span> &lt;过期时间&gt; <span class="hljs-symbol">&lt;value&gt;</span>	设置键值的的同时，设置过期时间<br>getset <span class="hljs-symbol">&lt;key&gt;</span> <span class="hljs-symbol">&lt;value&gt;</span>	返回旧值，赋上新值<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-数据结构"><a href="#2-数据结构" class="headerlink" title="(2) 数据结构"></a>(2) 数据结构</h3><p>底层为简单动态字符串(Simple Dynamic String, SDS)，对应java的ArrayList，采用<strong>预分配冗余空间</strong>的方式来减少内存的频繁分配</p>
+<p>内存为当前字符串分配空间capacity，当字符串长度小于1M，扩容时加倍扩容；如果大于1M，则扩容时只会多扩1M的空间。</p>
+<p>注意<strong>字符串的最大长度为512M</strong>！！！</p>
+<h2 id="2-List"><a href="#2-List" class="headerlink" title="2.List"></a>2.List</h2><h3 id="1-常用命令-1"><a href="#1-常用命令-1" class="headerlink" title="(1) 常用命令"></a>(1) 常用命令</h3><figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs tcl">//从左/右放值<br>lpush/rpush &lt;key&gt; &lt;value1&gt; &lt;value2&gt; &lt;value3&gt;<br>//从左/右吐出一个值，值在键在，值光键亡<br>lpop/rpop &lt;key&gt;<br>//从key1列表右边取出一个值，插到key2列表的左边<br>rpoplpush &lt;key1&gt; &lt;key2&gt;<br>//<span class="hljs-keyword">lrange</span> &lt;key&gt; <span class="hljs-number">0</span> <span class="hljs-number">-1</span>  ，从左到右取值，其中<span class="hljs-number">0</span>表示左边第一个，<span class="hljs-number">-1</span>表示右边第一个，<span class="hljs-number">0</span>  <span class="hljs-number">-1</span> 表示获取所有<br><span class="hljs-keyword">lrange</span> &lt;key&gt; &lt;start&gt; &lt;stop&gt;<br>//按照索引下标获得元素（从左到右，从<span class="hljs-number">0</span>开始）<br><span class="hljs-keyword">lindex</span> &lt;key&gt; &lt;index&gt;<br>//获取列表长度<br>llen &lt;key&gt;<br><br><br>//在value的前/后加上newvalue<br><span class="hljs-keyword">linsert</span> &lt;key&gt; before/<span class="hljs-keyword">after</span> &lt;value&gt; &lt;newvalue&gt;<br>//从左边开始删除count个value<br>lrem &lt;key&gt; &lt;count&gt; &lt;value&gt;<br>//将列表key下标为index的值替换成value<br><span class="hljs-keyword">lset</span> &lt;key&gt; &lt;index&gt; &lt;value&gt;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-数据结构-1"><a href="#2-数据结构-1" class="headerlink" title="(2) 数据结构"></a>(2) 数据结构</h3><p>快速链表（quicklist）</p>
+<h2 id="3-Set"><a href="#3-Set" class="headerlink" title="3.Set"></a>3.Set</h2><p>对外提供的功能和list类型，是一个列表的功能。string 类型的<strong>无序集合</strong>，底层是一个value为null的hash表，添加、删除、查找的复杂度都为O(1)</p>
+<p>可以<strong>自动排重</strong>，<strong>无序</strong></p>
+<h3 id="1-常用命令-2"><a href="#1-常用命令-2" class="headerlink" title="(1)常用命令"></a>(1)常用命令</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs xml">//加值<br>sadd <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">value1</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">value2</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">value3</span>&gt;</span>...<br>//取出key中的所有值<br>smembers <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span><br>//判断集合key是否含有value，有为1，没有为0<br>sismember <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span><br>//返回key集合中元素的个数<br>scard <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span><br>//删除集合key中的元素<br>srem <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">value1</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">value2</span>&gt;</span>...<br>//随机从该集合中吐出一个数<br>spop <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span><br>//随机从集合key中取出n个值，但是不会从集合中删除<br>srandmember <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">n</span>&gt;</span><br>//把集合中的value值从一个集合移动到另一个集合<br>smove <span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">destination</span>&gt;</span> value<br>//返回两个集合的交集元素<br>sinter <span class="hljs-tag">&lt;<span class="hljs-name">key1</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">key2</span>&gt;</span><br>//返回两个集合的并集元素<br>sunion <span class="hljs-tag">&lt;<span class="hljs-name">key1</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">key2</span>&gt;</span><br>//返回两个集合的差集元素(key1中的，不包含key2的)<br>sdiff <span class="hljs-tag">&lt;<span class="hljs-name">key1</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">key2</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-数据结构-2"><a href="#2-数据结构-2" class="headerlink" title="(2)数据结构"></a>(2)数据结构</h3><p>底层是字典dict，</p>
+<h2 id="4-Hash"><a href="#4-Hash" class="headerlink" title="4.Hash"></a>4.Hash</h2><p>Redis hash是一个string类型的field和value的映射表，类似于java里的Map&lt;Object, Object&gt;</p>
+<img src="/2022/02/12/Redis/image-20211028224853649.png" srcset="/img/loading.gif" lazyload alt="image-20211028224853649" style="zoom:100%;">
+
+<h3 id="1-常用命令-3"><a href="#1-常用命令-3" class="headerlink" title="(1)常用命令"></a>(1)常用命令</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs xml">//给<span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>集合中的<span class="hljs-tag">&lt;<span class="hljs-name">field</span>&gt;</span>键赋值<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span><br>hset <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">field</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span><br>//从<span class="hljs-tag">&lt;<span class="hljs-name">key1</span>&gt;</span>集合<span class="hljs-tag">&lt;<span class="hljs-name">field</span>&gt;</span>取出 value <br>hget <span class="hljs-tag">&lt;<span class="hljs-name">key1</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">field</span>&gt;</span><br>//批量设置hash的值<br>hmset <span class="hljs-tag">&lt;<span class="hljs-name">key1</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">field1</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">value1</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">field2</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">value2</span>&gt;</span>... <br>//查看哈希表 key 中，给定域 field 是否存在。 <br>hexists <span class="hljs-tag">&lt;<span class="hljs-name">key1</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">field</span>&gt;</span><br>//列出该hash集合的所有field<br>hkeys <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span><br>//列出该hash集合的所有value<br>hvals <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span><br>//为哈希表 key 中的域 field 的值加上增量<br>hincrby <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">field</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">increment</span>&gt;</span><br>//将哈希表 key 中的域 field 的值设置为 value ，当且仅当域 field 不存在 .<br>hsetnx <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">field</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-数据结构-3"><a href="#2-数据结构-3" class="headerlink" title="(2)数据结构"></a>(2)数据结构</h3><p>当field-value长度较短且个数较少时，使用ziplist</p>
+<p>否则使用hashtable</p>
+<h2 id="5-ZSet（sorted-set有序集合）"><a href="#5-ZSet（sorted-set有序集合）" class="headerlink" title="5.ZSet（sorted set有序集合）"></a>5.ZSet（sorted set有序集合）</h2><p><strong>没有重复元素</strong>的字符串集合</p>
+<p>有序集合的每个成员都关联了一个<strong>评分(score）</strong>,这个评分被用来按照从最低分到最高分的方式排序集合中的成员。<strong>集合的成员是唯一的</strong>，但是评分可以是重复了 。</p>
+<h3 id="1-常用命令-4"><a href="#1-常用命令-4" class="headerlink" title="(1)常用命令"></a>(1)常用命令</h3><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs pf">//将一个或多个 value 元素及其 score 值加入到有序集 key 当中。<br>zadd  <span class="hljs-variable">&lt;key&gt;</span> <span class="hljs-variable">&lt;score1&gt;</span> <span class="hljs-variable">&lt;value1&gt;</span> <span class="hljs-variable">&lt;score2&gt;</span> <span class="hljs-variable">&lt;value2&gt;</span>…<br>//返回有序集 key 中，下标在<span class="hljs-variable">&lt;start&gt;</span><span class="hljs-variable">&lt;stop&gt;</span>之间的元素<br>//带WITHSCORES，可以让分数一起和值返回到结果集。  <br>zrange <span class="hljs-variable">&lt;key&gt;</span> <span class="hljs-variable">&lt;start&gt;</span> <span class="hljs-variable">&lt;stop&gt;</span>  [WITHSCORES]   <br><br>//返回有序集 key 中，所有 score 值介于 <span class="hljs-keyword">min</span> 和 <span class="hljs-keyword">max</span> 之间(包括等于 <span class="hljs-keyword">min</span> 或 <span class="hljs-keyword">max</span> )的成员。有序集成员按 score 值递增(从小到大)次序排列。 <br>zrangebyscore key <span class="hljs-keyword">min</span> <span class="hljs-keyword">max</span> [withscores] [<span class="hljs-keyword">limit</span> offset count]<br>//同上，改为从大到小排列。 <br>zrevrangebyscore key <span class="hljs-keyword">max</span> <span class="hljs-keyword">min</span> [withscores] [<span class="hljs-keyword">limit</span> offset count]               <br><br>//为元素的score加上增量<br>zincrby <span class="hljs-variable">&lt;key&gt;</span> <span class="hljs-variable">&lt;increment&gt;</span> <span class="hljs-variable">&lt;value&gt;</span>      <br>//删除该集合下，指定值的元素 <br>zrem  <span class="hljs-variable">&lt;key&gt;</span> <span class="hljs-variable">&lt;value&gt;</span><br>//统计该集合，分数区间内的元素个数 <br>zcount <span class="hljs-variable">&lt;key&gt;</span> <span class="hljs-variable">&lt;min&gt;</span> <span class="hljs-variable">&lt;max&gt;</span><br>//返回该值在集合中的排名，从<span class="hljs-number">0</span>开始。<br>zrank <span class="hljs-variable">&lt;key&gt;</span> <span class="hljs-variable">&lt;value&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-数据结构-4"><a href="#2-数据结构-4" class="headerlink" title="(2)数据结构"></a>(2)数据结构</h3><p>hash和<strong>跳跃表</strong></p>
+<h2 id="二-新数据类型"><a href="#二-新数据类型" class="headerlink" title="(二) 新数据类型"></a>(二) 新数据类型</h2><h2 id="1-Bitmaps"><a href="#1-Bitmaps" class="headerlink" title="1.Bitmaps"></a>1.Bitmaps</h2><ul>
+<li><p>Bitmaps本身不是一种数据类型， 实际上它就是字符串（key-value） ， 但是它可以对字符串的<strong>位</strong>进行操作。</p>
+</li>
+<li><p>可以把Bitmaps想象成一个以位为单位的数组， 数组的每个单元只能存储0和1， 数组的下标在Bitmaps中叫做<strong>偏移量</strong>。</p>
+</li>
+</ul>
+<img src="/2022/02/12/Redis/image-20211030193337884.png" srcset="/img/loading.gif" lazyload alt="image-20211030193337884" style="zoom:100%;">
+
+<h3 id="1-常用命令-5"><a href="#1-常用命令-5" class="headerlink" title="(1)常用命令"></a>(1)常用命令</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">//</span>设置Bitmaps中某个偏移量的值（<span class="hljs-number">0</span>或<span class="hljs-number">1</span>），偏移量以bit！！！！为单位<br>setbit &lt;key&gt; &lt;offset&gt; &lt;value&gt;<br><span class="hljs-regexp">//</span>获取Bitmaps中某个偏移量的值<br>getbit &lt;key&gt; &lt;offset&gt;<br><span class="hljs-regexp">//</span>统计字符串从start字节到end字节比特值为<span class="hljs-number">1</span>的数量，注意start和end为字节！！！！，且都包含<br>bitcount &lt;key&gt; [start end] <br><span class="hljs-regexp">//</span>多个Bitmaps的and（交集） 、 or（并集） 、 not（非） 、 xor（异或） 操作并将结果保存在&lt;destkey&gt;中<br>bitop and(or<span class="hljs-regexp">/not/</span>xor) &lt;destkey&gt; [key…]<br></code></pre></td></tr></table></figure>
+
+<h2 id="2-HyperLogLog"><a href="#2-HyperLogLog" class="headerlink" title="2.HyperLogLog"></a>2.HyperLogLog</h2><p>每个HyperLogLog键只需要花费12kB内存，就可以计算接近2^64个不同元素的<strong>基数（即不重复元素的个数）</strong></p>
+<p>只会储存根据输入元素计算出来的基数，而不会储存输入元素本身，所以 HyperLogLog 不能像集合那样，返回输入的<strong>各个</strong>元素。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">//</span>添加指定元素到 HyperLogLog 中<br>pfadd &lt;key&gt; &lt;element&gt;...<br><span class="hljs-regexp">//</span>计算一个HLL（或多个HLL）的近似基数（计算有多少个数）<br>pfcount &lt;key&gt; [key ...] <br><span class="hljs-regexp">//</span>将一个或多个HLL合并后的结果存储在另一个HLL中<br>pfmerge &lt;destkey&gt; &lt;sourcekey&gt; [sourcekey ...]  <br></code></pre></td></tr></table></figure>
+
+<h2 id="3-Geospatial"><a href="#3-Geospatial" class="headerlink" title="3.Geospatial"></a>3.Geospatial</h2><p>GEO，Geographic，地理信息的缩写。该类型，就是元素的2维坐标，在地图上就是经纬度。redis基于该类型，提供了经纬度设置，查询，范围查询，距离查询，经纬度Hash等常见操作。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">//添加地理位置（经度，纬度，名称）<br>//有效的经度从 -180 度到 180 度。有效的纬度从 -85.05112878 度到 85.05112878 度。<br>//当坐标位置超出指定范围时，该命令将会返回一个错误。已经添加的数据，是无法再次往里面添加的。<br>geoadd<span class="hljs-variable">&lt;key&gt;</span><span class="hljs-variable">&lt;longitude&gt;</span><span class="hljs-variable">&lt;latitude&gt;</span><span class="hljs-variable">&lt;member&gt;</span> [longitude latitude member...]   <br><br>//获得指定地区的坐标值<br>geopos  <span class="hljs-variable">&lt;key&gt;</span> <span class="hljs-variable">&lt;member&gt;</span> [member...]<br><br>//获取两个位置之间的直线距离<br>geodist <span class="hljs-variable">&lt;key&gt;</span> <span class="hljs-variable">&lt;member1&gt;</span> <span class="hljs-variable">&lt;member2&gt;</span>  [m|<span class="hljs-string">km</span>|<span class="hljs-string">ft</span>|<span class="hljs-string">mi ]  </span><br><span class="hljs-string"></span><br><span class="hljs-string">//以给定的经纬度为中心，找出某一半径内的元素</span><br><span class="hljs-string">georadius &lt;key&gt; &lt;longitude&gt; &lt;latitude&gt; radius  m</span>|<span class="hljs-string">km</span>|<span class="hljs-string">ft</span>|<span class="hljs-string">mi   </span><br></code></pre></td></tr></table></figure>
+
+
+
+<h1 id="三、Redis6-配置文件"><a href="#三、Redis6-配置文件" class="headerlink" title="三、Redis6 配置文件"></a>三、Redis6 配置文件</h1><p>见课件</p>
+<h1 id="四、Redis6的发布和订阅"><a href="#四、Redis6的发布和订阅" class="headerlink" title="四、Redis6的发布和订阅"></a>四、Redis6的发布和订阅</h1><h2 id="1-定义"><a href="#1-定义" class="headerlink" title="1. 定义"></a>1. 定义</h2><p>Redis发布订阅(pub&#x2F;sub)是一种消息通信模式，pub(publish)发送者发送消息，sub(subscribe)订阅者接收消息</p>
+<p>Redis 客户端可以订阅任意数量的频道。</p>
+<img src="/2022/02/12/Redis/image-20211030115309171.png" srcset="/img/loading.gif" lazyload alt="image-20211030115309171" style="zoom:100%;">
+
+<p>当给这个频道发布消息后，消息就会发送给订阅的客户端</p>
+<img src="/2022/02/12/Redis/image-20211030115324742.png" srcset="/img/loading.gif" lazyload alt="image-20211030115324742" style="zoom:100%;">
+
+<h2 id="2-实现"><a href="#2-实现" class="headerlink" title="2.实现"></a>2.实现</h2><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-comment">#在一个客户端订阅channel1</span><br><span class="hljs-keyword">subscribe </span>channel1<br><span class="hljs-comment">#在另一个客户端向channel1发布消息hello</span><br>publish channel hello<br></code></pre></td></tr></table></figure>
+
+<img src="/2022/02/12/Redis/image-20211030120039489.png" srcset="/img/loading.gif" lazyload alt="image-20211030120039489" style="zoom:67%;">
+
+
+
+<h1 id="五、Jedis操作Redis6"><a href="#五、Jedis操作Redis6" class="headerlink" title="五、Jedis操作Redis6"></a>五、Jedis操作Redis6</h1><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-section">&lt;dependency&gt;</span><br>    <span class="hljs-section">&lt;groupId&gt;</span><span class="hljs-attribute">redis</span>.clients&lt;/groupId&gt;<br>    <span class="hljs-section">&lt;artifactId&gt;</span><span class="hljs-attribute">jedis</span>&lt;/artifactId&gt;<br>    <span class="hljs-section">&lt;version&gt;</span><span class="hljs-attribute">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>&lt;/version&gt;<br><span class="hljs-section">&lt;/dependency&gt;</span><br><br><span class="hljs-attribute">Jedis</span> jedis = new Jedis(<span class="hljs-string">&quot;192.168.137.3&quot;</span>,<span class="hljs-number">6379</span>);<br></code></pre></td></tr></table></figure>
+
+<p>禁用Linux的防火墙：Linux(CentOS7)里执行命令</p>
+<p><strong>systemctl stop&#x2F;disable firewalld.service</strong>  </p>
+<p>redis.conf中注释掉bind 127.0.0.1 ,然后 protected-mode no</p>
+<h1 id="六、Redis6和SpringBoot整合"><a href="#六、Redis6和SpringBoot整合" class="headerlink" title="六、Redis6和SpringBoot整合"></a>六、Redis6和SpringBoot整合</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- redis --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- spring2.X集成redis所需common-pool2--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.commons<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>commons-pool2<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.6.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>application.properties</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-comment">#Redis服务器地址</span><br><span class="hljs-attr">spring.redis.host</span>=<span class="hljs-string">192.168.140.136</span><br><span class="hljs-comment">#Redis服务器连接端口</span><br><span class="hljs-attr">spring.redis.port</span>=<span class="hljs-string">6379</span><br><span class="hljs-comment">#Redis数据库索引（默认为0）</span><br><span class="hljs-attr">spring.redis.database</span>= <span class="hljs-string">0</span><br><span class="hljs-comment">#连接超时时间（毫秒）</span><br><span class="hljs-attr">spring.redis.timeout</span>=<span class="hljs-string">1800000</span><br><span class="hljs-comment">#连接池最大连接数（使用负值表示没有限制）</span><br><span class="hljs-attr">spring.redis.lettuce.pool.max-active</span>=<span class="hljs-string">20</span><br><span class="hljs-comment">#最大阻塞等待时间(负数表示没限制)</span><br><span class="hljs-attr">spring.redis.lettuce.pool.max-wait</span>=<span class="hljs-string">-1</span><br><span class="hljs-comment">#连接池中的最大空闲连接</span><br><span class="hljs-attr">spring.redis.lettuce.pool.max-idle</span>=<span class="hljs-string">5</span><br><span class="hljs-comment">#连接池中的最小空闲连接</span><br><span class="hljs-attr">spring.redis.lettuce.pool.min-idle</span>=<span class="hljs-string">0</span><br></code></pre></td></tr></table></figure>
+
+<p>config</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.tt.config;<br><br><br><span class="hljs-comment">//import com.fasterxml.jackson.annotation.JsonAutoDetect;</span><br><span class="hljs-keyword">import</span> com.fasterxml.jackson.annotation.JsonAutoDetect;<br><span class="hljs-keyword">import</span> com.fasterxml.jackson.databind.ObjectMapper;<br><span class="hljs-keyword">import</span> org.springframework.cache.CacheManager;<br><span class="hljs-keyword">import</span> org.springframework.cache.annotation.CachingConfigurerSupport;<br><span class="hljs-keyword">import</span> org.springframework.cache.annotation.EnableCaching;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.cache.RedisCacheConfiguration;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.cache.RedisCacheManager;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.connection.RedisConnectionFactory;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.core.RedisTemplate;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.serializer.RedisSerializationContext;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.serializer.RedisSerializer;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.serializer.StringRedisSerializer;<br><span class="hljs-keyword">import</span> com.fasterxml.jackson.annotation.PropertyAccessor;<br><br><span class="hljs-keyword">import</span> java.time.Duration;<br><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@EnableCaching</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RedisConfig</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">CachingConfigurerSupport</span>&#123;<br><br>    <span class="hljs-comment">//将redisTemplate放进容器中</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> RedisTemplate&lt;String, Object&gt; <span class="hljs-title function_">redisTemplate</span><span class="hljs-params">(RedisConnectionFactory factory)</span> &#123;<br>        RedisTemplate&lt;String, Object&gt; template = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RedisTemplate</span>&lt;&gt;();<br>        RedisSerializer&lt;String&gt; redisSerializer = <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringRedisSerializer</span>();<br>        <span class="hljs-type">Jackson2JsonRedisSerializer</span> <span class="hljs-variable">jackson2JsonRedisSerializer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Jackson2JsonRedisSerializer</span>(Object.class);<br>        <span class="hljs-type">ObjectMapper</span> <span class="hljs-variable">om</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectMapper</span>();<br>        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);<br>        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);<br>        jackson2JsonRedisSerializer.setObjectMapper(om);<br>        template.setConnectionFactory(factory);<br>        <span class="hljs-comment">//key序列化方式</span><br>        template.setKeySerializer(redisSerializer);<br>        <span class="hljs-comment">//value序列化</span><br>        template.setValueSerializer(jackson2JsonRedisSerializer);<br>        <span class="hljs-comment">//value hashmap序列化</span><br>        template.setHashValueSerializer(jackson2JsonRedisSerializer);<br>        <span class="hljs-keyword">return</span> template;<br>    &#125;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> CacheManager <span class="hljs-title function_">cacheManager</span><span class="hljs-params">(RedisConnectionFactory factory)</span> &#123;<br>        RedisSerializer&lt;String&gt; redisSerializer = <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringRedisSerializer</span>();<br>        <span class="hljs-type">Jackson2JsonRedisSerializer</span> <span class="hljs-variable">jackson2JsonRedisSerializer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Jackson2JsonRedisSerializer</span>(Object.class);<br><span class="hljs-comment">//解决查询缓存转换异常的问题</span><br>        <span class="hljs-type">ObjectMapper</span> <span class="hljs-variable">om</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectMapper</span>();<br>        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);<br>        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);<br>        jackson2JsonRedisSerializer.setObjectMapper(om);<br><span class="hljs-comment">// 配置序列化（解决乱码的问题）,过期时间600秒</span><br>        <span class="hljs-type">RedisCacheConfiguration</span> <span class="hljs-variable">config</span> <span class="hljs-operator">=</span> RedisCacheConfiguration.defaultCacheConfig()<br>                .entryTtl(Duration.ofSeconds(<span class="hljs-number">600</span>))<br>                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))<br>                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer))<br>                .disableCachingNullValues();<br>        <span class="hljs-type">RedisCacheManager</span> <span class="hljs-variable">cacheManager</span> <span class="hljs-operator">=</span> RedisCacheManager.builder(factory)<br>                .cacheDefaults(config)<br>                .build();<br>        <span class="hljs-keyword">return</span> cacheManager;<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>controller</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.tt.control;<br><br><span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.core.RedisTemplate;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.GetMapping;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.RestController;<br><br><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@RequestMapping(&quot;/redisTest&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RedisTestController</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RedisTemplate redisTemplate;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/get&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">testRedis</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-comment">//设置值到redis</span><br>        redisTemplate.opsForValue().set(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;lucy&quot;</span>);<br>        <span class="hljs-comment">//从redis中获取值</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> (String) redisTemplate.opsForValue().get(<span class="hljs-string">&quot;name&quot;</span>);<br>        <span class="hljs-keyword">return</span> name;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="七、Redis6的事务操作"><a href="#七、Redis6的事务操作" class="headerlink" title="七、Redis6的事务操作"></a>七、Redis6的事务操作</h1><p>Redis事务是一个单独的隔离操作：事务中的所有命令都会序列化、按顺序地执行。事务在执行的过程中，不会被其他客户端发送来的命令请求所打断。</p>
+<p>Redis事务的主要作用就是**串联多个命令 ** 、 <strong>防止别的命令插队</strong>。</p>
+<h2 id="1-命令"><a href="#1-命令" class="headerlink" title="1. 命令"></a>1. 命令</h2><p>从输入<strong>Multi</strong>命令开始，输入的命令都会依次进入命令队列中，但不会执行，直到输入<strong>Exec</strong>后，Redis会将之前的命令队列中的命令依次执行。</p>
+<p>组队的过程中可以通过<strong>discard</strong>来放弃组队。（注意是全部放弃）</p>
+<img src="/2022/02/12/Redis/image-20211101094002358.png" srcset="/img/loading.gif" lazyload alt="image-20211101094002358" style="zoom:80%;">
+
+<h2 id="2-事务的错误处理"><a href="#2-事务的错误处理" class="headerlink" title="2.事务的错误处理"></a>2.事务的错误处理</h2><p>如果组队阶段输入有报错，则整个队列都无法执行</p>
+<img src="/2022/02/12/Redis/image-20211101095828217.png" srcset="/img/loading.gif" lazyload alt="image-20211101095828217" style="zoom:80%;">
+
+<p>组队成功，提交有成功、有失败</p>
+<img src="/2022/02/12/Redis/image-20211101095800767.png" srcset="/img/loading.gif" lazyload alt="image-20211101095800767" style="zoom:80%;">
+
+<h2 id="3-事务的冲突"><a href="#3-事务的冲突" class="headerlink" title="3. 事务的冲突"></a>3. 事务的冲突</h2><h3 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="(1) 问题描述"></a>(1) 问题描述</h3><img src="/2022/02/12/Redis/image-20211101111855203.png" srcset="/img/loading.gif" lazyload alt="image-20211101111855203" style="zoom:80%;">
+
+<h3 id="2-悲观锁"><a href="#2-悲观锁" class="headerlink" title="(2) 悲观锁"></a>(2) 悲观锁</h3><p>操作之前先上锁——每次拿到数据后将数据上锁，别人想去拿这个数据时就会block，直到“我”释放了这个锁</p>
+<p>传统关系型数据库里用到了很多这种锁的机制，例如行锁、表锁等，读锁、写锁等</p>
+<h3 id="3-乐观锁-check-and-set"><a href="#3-乐观锁-check-and-set" class="headerlink" title="(3)乐观锁 check-and-set"></a>(3)乐观锁 check-and-set</h3><p> 更新数据时判断有没有别人已经更新了这个数据，如果更新了则“我”更新失败。（判断是否更新：使用版本号，更新成功则修改版本号）</p>
+<p>乐观锁适用于<strong>多读</strong>的应用类型，可以提高吞吐率（例如抢票，大家都可以进入抢的页面，但是不是都能支付成功）</p>
+<p><strong>watch key</strong></p>
+<p><strong>unwatch key</strong> (如果执行了exec或者discard，直接unwatch key了)</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs maxima">//在执行multi之前，先执行watch key1 [key2],可以监视一个(或多个) <span class="hljs-built_in">key</span> ，如果在事务执行之前这个(或这些) <span class="hljs-built_in">key</span> 被其他命令所改动，那么事务将被打断。<br>//如果没有watch <span class="hljs-built_in">key</span>，则两个事务可以修改同一个<span class="hljs-built_in">key</span><br>watch <span class="hljs-built_in">key</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="4-Redis事务三特性"><a href="#4-Redis事务三特性" class="headerlink" title="4. Redis事务三特性"></a>4. Redis事务三特性</h2><ul>
+<li>单独的隔离操作 <ul>
+<li>事务中的所有命令都会序列化、按顺序地执行。事务在执行的过程中，不会被其他客户端发送来的命令请求所打断。</li>
+</ul>
+</li>
+<li>没有隔离级别的概念 <ul>
+<li>队列中的命令没有提交之前都不会实际被执行，因为事务提交前任何指令都不会被实际执行</li>
+</ul>
+</li>
+<li>不保证原子性 <ul>
+<li>事务中如果有一条命令执行失败，其后的命令仍然会被执行，没有回滚</li>
+</ul>
+</li>
+</ul>
+<h1 id="八、Redis6持久化之RDB-Redis-DataBase"><a href="#八、Redis6持久化之RDB-Redis-DataBase" class="headerlink" title="八、Redis6持久化之RDB(Redis DataBase)"></a>八、Redis6持久化之RDB(Redis DataBase)</h1><p>在<strong>指定的时间间隔内</strong>将内存中的数据集快照写入磁盘， **&#x3D;&#x3D;Snapshot快照&#x3D;&#x3D;**，它恢复时是将快照文件直接读到内存里</p>
+<p>默认开启</p>
+<p>因为Redis是内存数据库，它将自己的数据库状态存储在内存里面，所以如果不想办法将存储在内存中的数据库状态保存到磁盘中，那么一旦服务器进程退出，服务器中的数据库状态也会消失。为了解决这个问题，Redis提供了RDB持久化功能，可以将Redis内存中的数据库状态保存到磁盘中，避免数据意外丢失</p>
+<h2 id="1-RDB文件的创建和载入"><a href="#1-RDB文件的创建和载入" class="headerlink" title="1. RDB文件的创建和载入"></a>1. RDB文件的创建和载入</h2><p>两个Redis命令——SAVE和BGSAVE，</p>
+<p>其中SAVE是阻塞式的，直到RDB文件创建完毕，阻塞期间，服务器不能处理任何命令请求</p>
+<p>BGSAVE派生出fork子进程，由子进程创建RDB文件，父进程继续处理命令请求</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>save</th>
+<th>bgsave</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IO类型</td>
+<td>同步</td>
+<td>异步</td>
+</tr>
+<tr>
+<td>是否阻塞redis其他命令</td>
+<td>是</td>
+<td>否（在生成子进程fork函数时会有短暂阻塞）</td>
+</tr>
+<tr>
+<td>复杂度</td>
+<td>O(n)</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td>优点</td>
+<td>不会消耗额外内存</td>
+<td>不阻塞客户端命令</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>阻塞客户端命令</td>
+<td>需要fork子进程，大致两倍的膨胀性，消耗内存</td>
+</tr>
+</tbody></table>
+<p>以下为伪代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">SAVE</span>():<br>    <span class="hljs-comment">#创建RDB文件</span><br>    rdbSave()<br> <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">BGSAVE</span>():<br>    <span class="hljs-comment">#创建子进程</span><br>    pid = fork()<br>    <span class="hljs-keyword">if</span> pid == <span class="hljs-number">0</span>:<br>        <span class="hljs-comment">#子进程负责创建RDB文件并保存文件</span><br>        rdbSave()<br>        <span class="hljs-comment">#完成之后向父进程发出信号</span><br>        signal_parent()<br>    <span class="hljs-keyword">elif</span> pid &gt; <span class="hljs-number">0</span>:<br>        <span class="hljs-comment">#父进程继续处理命令请求，并通过轮询等待子进程信号</span><br>        handle_request_and_wait_signal()<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-comment">#处理出错情况</span><br>        handle_fork_error()<br></code></pre></td></tr></table></figure>
+
+<p>持久化流程：</p>
+<img src="/2022/02/12/Redis/image-20211101211942535.png" srcset="/img/loading.gif" lazyload alt="image-20211101211942535" style="zoom:100%;">
+
+<p>**&#x3D;&#x3D;动态停止RDB&#x3D;&#x3D;**：redis-cli config set save “”#save后给空值，表示禁用保存策略</p>
+<h2 id="2-自动间隔性保存"><a href="#2-自动间隔性保存" class="headerlink" title="2. 自动间隔性保存"></a>2. 自动间隔性保存</h2><p>因为BGSAVE命令可以在不阻塞服务器的情况下执行，所以Redis允许用户通过设置服务器配置的save选项，让服务器<strong>每隔一段时间</strong>自动执行一次BGSAVE命令。</p>
+<img src="/2022/02/12/Redis/image-20211101185837827.png" srcset="/img/loading.gif" lazyload alt="image-20211101185837827" style="zoom:80%;">
+
+<p>服务器状态redisServer结构体的saveparams属性中保存save选项设置的保存条件，</p>
+<img src="/2022/02/12/Redis/image-20211101191148721.png" srcset="/img/loading.gif" lazyload alt="image-20211101191148721 " style="zoom:80%;">
+
+<p>服务器状态还维持着一个dirty计数器和lastsave属性</p>
+<ul>
+<li>dirty计数器记录距离上一次成功执行SAVE命令或者BGSAVE命令之后，服务器对数据库状态（服务器中的所有数据库）进行了多少次修改（包括写入、删除、更新等操作）</li>
+<li>lastsave属性是一个Unix时间戳，记录了服务器上一次成功执行SAVE命令或BGSAVE命令的时间</li>
+</ul>
+<p>Redis的服务器周期性操作函数serverCron默认每隔100毫秒就会执行一次，如果规定时间内满足了修改次数要求，则<strong>bgsave</strong></p>
+<h2 id="3-redis-conf中的配置"><a href="#3-redis-conf中的配置" class="headerlink" title="3.redis.conf中的配置"></a>3.redis.conf中的配置</h2><ul>
+<li><strong>save：</strong>这里是用来配置触发 Redis的 RDB 持久化条件，也就是什么时候将内存中的数据保存到硬盘。这时启动的是bgsave命令</li>
+<li><strong>stop-writes-on-bgsave-error ：</strong>默认值为yes。后台存储过程中如果出现错误现象，是否停止保存操作</li>
+<li><strong>rdbcompression ；</strong>默认值是yes。对于存储到磁盘中的快 照，可以设置是否进行压缩存储。如果是的话，redis会采用LZF算法进行压缩。</li>
+<li><strong>rdbchecksum ：</strong>默认值是yes。在存储快照后，我们还可以让redis使用CRC64算法来进行数据校验，但是这样做会增加大约10%的性能消耗，如果希望获取到最大的性能提升，可以关闭此功能。</li>
+<li><strong>dbfilename ：</strong>设置快照的文件名，默认是 <strong>&#x3D;&#x3D;dump.rdb&#x3D;&#x3D;</strong></li>
+<li><strong>dir：</strong>设置快照文件的存放路径，这个配置项一定是个目录，而不能是文件名。默认是和当前配置文件保存在同一目录。</li>
+</ul>
+<h2 id="x3D-x3D-4-写时拷贝-COW-CopyOnWrite-x3D-x3D"><a href="#x3D-x3D-4-写时拷贝-COW-CopyOnWrite-x3D-x3D" class="headerlink" title="&#x3D;&#x3D;4. 写时拷贝(COW   CopyOnWrite)&#x3D;&#x3D;"></a>&#x3D;&#x3D;4. 写时拷贝(COW   CopyOnWrite)&#x3D;&#x3D;</h2><p>Redis 服务器会在触发 BGSAVE 时调用 redis Fork 函数来创建子进程并调用 rdbSave 在子进程中对数据进行持久化</p>
+<ul>
+<li><p>fork之后的子进程为什么能够获取父进程内存中的数据</p>
+<p>调用 <code>fork</code> 后的父子进程会运行在不同的内存空间中，当 <code>fork</code> 发生时两者的<strong>内存空间有着完全相同的内容</strong>，对内存的写入和修改、文件的映射都是独立的，两个进程不会相互影响。</p>
+<p>父子进程的内存在 fork 时是完全相同的，在 fork 之后父进程进行写入和修改也不会相互影响</p>
+</li>
+<li><p>fork函数带来的额外性能开销如何避免</p>
+<p>&#x3D;&#x3D;写时拷贝&#x3D;&#x3D;：将拷贝推迟到写操作真正发生时，避免了大量无意义的拷贝操作</p>
+</li>
+</ul>
+<p><strong>写时拷贝原理：</strong></p>
+<p>在 fork 函数调用时，父进程和子进程会被 Kernel 分配到不同的虚拟内存空间中，所以在两个进程看来它们访问的是不同的内存：</p>
+<ul>
+<li>在真正访问虚拟内存空间时，Kernel 会将虚拟内存映射到物理内存上，所以父子进程共享了物理上的内存空间；</li>
+<li>当父进程或者子进程对共享的内存进行修改时，共享的内存才会以页为单位进行拷贝，父进程会保留原有的物理空间，而子进程会使用拷贝后的新物理空间。</li>
+</ul>
+<h2 id="5-备份"><a href="#5-备份" class="headerlink" title="5. 备份"></a>5. 备份</h2><p>将*.rdb的文件拷贝到别的地方</p>
+<p>rdb的恢复</p>
+<ul>
+<li><p>关闭Redis</p>
+</li>
+<li><p>先把备份的文件拷贝到工作目录下，修改备份文件的名称为dump.rdb</p>
+</li>
+<li><p>启动Redis, 备份数据会直接加载</p>
+</li>
+</ul>
+<h2 id="6-优缺点"><a href="#6-优缺点" class="headerlink" title="6. 优缺点"></a>6. 优缺点</h2><p>优点</p>
+<ul>
+<li>适合大规模的数据恢复</li>
+<li>对数据的完整性和一致性要求不高更适合使用（最后一次数据可能丢失）</li>
+<li>节省磁盘空间</li>
+<li>恢复速度快</li>
+</ul>
+<p>缺点</p>
+<ul>
+<li>最后一次持久化后的数据可能丢失</li>
+<li>写时复制(COW)需要2倍的膨胀性能，消耗性能</li>
+</ul>
+<h1 id="九、Redis6持久化之AOF-Append-Only-File"><a href="#九、Redis6持久化之AOF-Append-Only-File" class="headerlink" title="九、Redis6持久化之AOF(Append Only File)"></a>九、Redis6持久化之AOF(Append Only File)</h1><p>以日志的形式记录每个<strong>写操作</strong>，将redis执行过的所有<strong>修改指令</strong>记录下来（读操作不记录），<strong>只许追加文件但不可以改写文件</strong></p>
+<p>默认不开启（需要修改 ）</p>
+<p>相比于RDB，AOF可以简单描述为**&#x3D;&#x3D;改记录数据为记录数据产生的过程&#x3D;&#x3D;**</p>
+<h2 id="1-AOF流程"><a href="#1-AOF流程" class="headerlink" title="1.AOF流程"></a>1.AOF流程</h2><ul>
+<li><p>命令追加(append)：将Redis的写命令追加到缓冲区aof_buf;</p>
+</li>
+<li><p>文件写入(write)和文件同步(sync)：根据不同的同步策略将aof_buf中的内容同步到硬盘;</p>
+</li>
+</ul>
+<p>主进程接收客户端请求写命令，写入到aof_buf（aof缓冲区）然后主进程就返回了，有专门的子进程去调用fsync()函数把数据从aof_buf写入到aof文件。什么时候调用fsync()函数——appendfsync配置。</p>
+<h2 id="2-AOF配置"><a href="#2-AOF配置" class="headerlink" title="2. AOF配置"></a>2. AOF配置</h2><p><strong>appendonly</strong> yes：开启AOF </p>
+<p><strong>appendfilename</strong> “appendonly.aof”</p>
+<p><strong>appendfsync</strong> ：同步频率，always为始终同步，每次Redis的写入都会立刻记入日志；性能较差但数据完整性比较好；everysec为每秒同步，每秒记入日志一次，如果宕机，本秒的数据可能丢失。no为redis不主动进行同步，把同步时机交给操作系统。</p>
+<p><strong>no-appendfsync-on-rewrite</strong>：yes不写入aof文件只写入缓存，用户请求不会阻塞，但是在这段时间如果宕机会丢失这段时间的缓存数据。（降低数据安全性，提高性能）。no把数据往磁盘里刷，但是遇到重写操作，可能会发生阻塞。（数据安全，但是性能降低）</p>
+<p><strong>异常恢复</strong>：&#x2F;usr&#x2F;local&#x2F;bin&#x2F; redis-check-aof–fix appendonly.aof</p>
+<h2 id="3-Rewrite重写机制"><a href="#3-Rewrite重写机制" class="headerlink" title="3.  Rewrite重写机制"></a>3.  Rewrite重写机制</h2><p> <strong>重写后为什么会缩减文件大小</strong></p>
+<ul>
+<li>过期的数据不再写入文件</li>
+<li>无效的命令不再写入文件：如有些数据被重复设值(set mykey v1, set mykey v2)、有些数据被删除了(sadd myset v1, del myset) 等。</li>
+<li>多条命令可以合并为一个：如sadd myset v1, sadd myset v2， sadd myset v3可以合并为sadd myset v1 v2 v3。</li>
+</ul>
+<p><strong>重写方式</strong>：</p>
+<ul>
+<li>手动重写——bgrewriteaof</li>
+</ul>
+<img src="/2022/02/12/Redis/image-20211102102246066.png" srcset="/img/loading.gif" lazyload alt="image-20211102102246066 " style="zoom:80%;">
+
+<ul>
+<li>自动重写——配置触发条件</li>
+</ul>
+<p><strong>auto-aof-rewrite-min-size</strong> size<br><strong>auto-aof-rewrite-percentage</strong> percentage</p>
+<p>在info Persistence里另外两个参数为aof_current_size和aof_base_size，其中aof_base_size为重写后的aof大小</p>
+<p>自动重写触发条件：</p>
+<p><strong>aof_current_size&gt;&#x3D; base_size +base_size*auto-aof-rewrite-percentage</strong> </p>
+<p><strong>aof_current_size&gt;auto-aof-rewrite-min-size</strong></p>
+<p><strong>重写流程：</strong></p>
+<p>当redis开启了持久化功能，且达到了重写的条件：</p>
+<p>1.调用fork系统级别函数，复制出完全一致的一个<strong>子进程</strong>，和主进程共用同一块内存空间</p>
+<p>2.子进程调用aof_rewrite函数(redis客户端执行bgrewriteaof命令最终也是调用此函数)可以创建新的AOF文件去执行重写操作，根据已有数据进行命令的压缩和过期时间的检测并将压缩后的命令写入到新的AOF文件，直到写完</p>
+<p>在AOF重写过程中，主进程是可以继续对外服务的，当接收到写命令，写入到<strong>AOF缓冲区</strong>后，然后判断此时是否正在执行重写操作，如果是再将写命令写入到<strong>AOF重写缓冲区</strong>，主进程返回</p>
+<p>3.当子进程完成对AOF文件重写之后，它会向父进程发送一个完成信号，</p>
+<p>4+5.父进程接到该完成信号之后，会调用一个信号处理函数，该函数完成以下工作：</p>
+<ul>
+<li>将<strong>AOF重写缓存中的内容</strong>全部写入到新的AOF文件中；这个时候新的AOF文件所保存的数据库状态和服务器当前的数据库状态一致；</li>
+<li>对新的AOF文件进行改名，<strong>原子的</strong>覆盖原有的AOF文件；完成新旧两个AOF文件的替换。到这里才是一次完整的AOF重写流程</li>
+</ul>
+<img src="/2022/02/12/Redis/aof重写.png" srcset="/img/loading.gif" lazyload alt="aof重写 " style="zoom:130%;">
+
+<h2 id="4-优缺点"><a href="#4-优缺点" class="headerlink" title="4.优缺点"></a>4.优缺点</h2><p>优点</p>
+<ul>
+<li>备份机制文件，丢失数据概率低</li>
+<li>可以修复误操作导致的AOF</li>
+</ul>
+<p>缺点</p>
+<ul>
+<li>比RDB占用更多的磁盘空间</li>
+<li>恢复备份速度慢一些</li>
+<li>每次读写都同步有性能压力</li>
+</ul>
+<h1 id="十、Redis6的主从复制"><a href="#十、Redis6的主从复制" class="headerlink" title="十、Redis6的主从复制"></a>十、Redis6的主从复制</h1><h2 id="1-主从复制概述"><a href="#1-主从复制概述" class="headerlink" title="1.主从复制概述"></a>1.主从复制概述</h2><p><strong>提供数据方</strong>：master，主服务器、主节点、主库、主客户端</p>
+<p>​    写数据、执行写操作的时候，将出现变化的数据自动同步到slave</p>
+<p><strong>接收数据方</strong>：slave，从服务器、从节点、从库、从客户端</p>
+<p>​    读数据（禁止写数据）</p>
+<img src="/2022/02/12/Redis/image-20211103201313192.png" srcset="/img/loading.gif" lazyload alt="image-20211103201313192 " style="zoom:80%;">
+
+<p><strong>主从复制的作用</strong>：</p>
+<ul>
+<li>读写分离：master写、slave读，提高服务器的读写负载能力</li>
+<li>负载均衡：由slave分担master负载，根据需求的变化改变slave的数量，通过多个节点分担数据读取负载，大大提高redis服务器并发量与数据吞吐量</li>
+<li>故障恢复：当master出现问题时，由slave推选出一个master来提供写的服务，实现快速的故障恢复</li>
+<li>数据冗余：实现数据热备份，持久化之外的一种数据备份方式</li>
+<li>高可用基石：基于主从复制，构建哨兵模式和高可用方案</li>
+</ul>
+<h2 id="2-主从复制工作流程"><a href="#2-主从复制工作流程" class="headerlink" title="2. 主从复制工作流程"></a>2. 主从复制工作流程</h2><h3 id="1-总述"><a href="#1-总述" class="headerlink" title="(1)总述"></a>(1)<strong>总述</strong></h3><ul>
+<li>阶段一：建立连接阶段</li>
+<li>阶段二：数据同步阶段：第一次建立连接后同步数据</li>
+<li>阶段三：命令传播阶段：保证主从状态一致</li>
+</ul>
+<h3 id="2-阶段一：slave连接master"><a href="#2-阶段一：slave连接master" class="headerlink" title="(2)阶段一：slave连接master"></a>(2)<strong>阶段一</strong>：slave连接master</h3><img src="/2022/02/12/Redis/image-20211103220423448.png" srcset="/img/loading.gif" lazyload alt="image-20211103220423448 " style="zoom:60%;">
+
+<p>开启主客户端和从客户端（<strong>需要开启redis-cli</strong>，不然报错），slave输入密码后，连接master（此时master可以不输入密码）</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">//</span>连接<br>slaveof &lt;masterip&gt; &lt;masterport&gt;<br><span class="hljs-regexp">//</span>断开连接<br>slaveof no one<br><span class="hljs-regexp">//</span>如果主客户端设置了密码，则需要从客户端在conf文件中配置密码<br><span class="hljs-regexp">//</span>配置<br>masterauth &lt;password&gt;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-阶段二：数据同步阶段【全量复制】-【部分复制】"><a href="#3-阶段二：数据同步阶段【全量复制】-【部分复制】" class="headerlink" title="(3)阶段二：数据同步阶段【全量复制】 **+**【部分复制】"></a>(3)<strong>阶段二</strong>：数据同步阶段【全量复制】 **+**【部分复制】</h3><ul>
+<li><p>master使用RDB是因为RDB恢复数据快</p>
+</li>
+<li><p>slave接收RDB之后，要<strong>清空数据</strong>再执行RDB文件恢复过程</p>
+</li>
+<li><p><strong>复制（积压）缓冲区</strong>类似于AOF中的重写缓冲区，保存RDB快照之后的指令，且master知道了到底传了多少数据给slave，下次复制从下一条数据开始传</p>
+</li>
+<li><p>由于是指令，slave接收之后先执行bgrewriteaof再恢复数据</p>
+</li>
+</ul>
+<img src="/2022/02/12/Redis/image-20211104233211918.png" srcset="/img/loading.gif" lazyload alt="image-20211104233211918 " style="zoom:150%;">
+
+<p><strong>一些说明</strong></p>
+<p><strong>1.master</strong></p>
+<ul>
+<li><p>如果master数据量巨大，则数据同步应该避开高峰期</p>
+</li>
+<li><p>缓冲区的大小设置需谨慎，如果数据溢出，则会挤掉头部数据，进行部分复制的时候如果发现数据已经丢失了，则必须进行第二次全量复制，致使slave陷入死循环</p>
+<p>&#x3D;&#x3D;修改缓冲区大小&#x3D;&#x3D;：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">repl</span>-backlog-size <span class="hljs-number">1</span>mb<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>master单机内存占用主机内存的比例不应过大，建议50%-70%， 留下30%-50%的内存用于执行bgsave命令和创建复制缓冲区</p>
+</li>
+</ul>
+<p><strong>2.slave</strong></p>
+<ul>
+<li><p>关闭复制时的对外服务</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript">slave-serve-stale-data <span class="hljs-literal">yes</span>|<span class="hljs-literal">no</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>slave过多时，建议调整拓扑结构，由一主多从结构变为树状结构，中间的节点既是master，也是slave。但是此时层级深度导致最深层的slave和顶层的master间数据同步延迟较大，数据一致性变差，谨慎选择。</p>
+</li>
+<li><p>多个slave同时对master请求数据同步，master发送的RDB文件增多，会对带宽造成巨大冲击，应适量错峰</p>
+</li>
+</ul>
+<h3 id="4-阶段三：命令传播阶段"><a href="#4-阶段三：命令传播阶段" class="headerlink" title="(4)阶段三：命令传播阶段"></a>(4)<strong>阶段三</strong>：命令传播阶段</h3><p>当master数据库状态被修改后，需要让主从数据同步到一致的状态，同步的动作称作<strong>命令传播</strong></p>
+<p>此时如果发生了长时间网络中断，则直接【全量复制】</p>
+<p>如果是短时间网络中断，则【部分复制】——复制积压缓冲区（在阶段二也用过）</p>
+<p>【心跳机制】</p>
+<p>master和slave需要进行信息交换和确保双方在线</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver"><span class="hljs-built_in">min</span>-slaves-<span class="hljs-built_in">to</span>-<span class="hljs-built_in">write</span> <span class="hljs-number">2</span><br><span class="hljs-built_in">min</span>-slaves-<span class="hljs-built_in">max</span>-lag <span class="hljs-number">8</span><br><span class="hljs-comment">#slave数量少于2个，或者所有slave的延迟都&gt;=8s时，强制关闭master写功能，停止数据同步</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>master心跳<ul>
+<li>指令：PING</li>
+<li>周期：由repl-ping-slave-period决定，默认10秒</li>
+<li>作用：判断slave是否在线</li>
+<li>查询：INFO replication</li>
+</ul>
+</li>
+<li>slave心跳<ul>
+<li>指令：REPLCONF ACK{offset}</li>
+<li>周期：1秒</li>
+<li>作用1：汇报自己offset，获取最新的数据变更指令</li>
+<li>作用2：判断master是否在线</li>
+</ul>
+</li>
+</ul>
+<p>【复制积压缓冲区】</p>
+<p>（概念）</p>
+<p>先进先出的队列，用于储存master收到的指令（仅影响数据变更的指令，例如set、del、&#x3D;&#x3D;select(换库)&#x3D;&#x3D;）</p>
+<p>（储存内容）【偏移量offset】+【字节值】</p>
+<p>“set name itheima”</p>
+<img src="/2022/02/12/Redis/image-20211104232431180.png" srcset="/img/loading.gif" lazyload alt="image-20211104232431180" style="zoom:67%;">
+
+<img src="/2022/02/12/Redis/image-20211104232454698.png" srcset="/img/loading.gif" lazyload alt="image-20211104232454698 " style="zoom:50%;">
+
+<p>master记录已发送信息对应的offset（多个）</p>
+<p>slave记录已接收信息对应的offset（单个）</p>
+<p>根据master和slave的 offset的不同查看是否正常传播</p>
+<p><img src="/2022/02/12/Redis/Redis%5Cimage-20211104234427526.png" srcset="/img/loading.gif" lazyload alt="image-20211104234427526"></p>
+<h1 id="十一、哨兵模式"><a href="#十一、哨兵模式" class="headerlink" title="十一、哨兵模式"></a>十一、哨兵模式</h1><p>哨兵(sentinel) 是一个分布式系统，用于对主从结构中的每台服务器进行**&#x3D;&#x3D;监控&#x3D;&#x3D;<strong>，当出现故障时通过</strong>&#x3D;&#x3D;投票机制&#x3D;&#x3D;**选择新的master并将所有slave连接到新的master。</p>
+<p>哨兵也是一个redis服务器，只是不提供数据服务，通常哨兵配置为**&#x3D;&#x3D;单数&#x3D;&#x3D;**</p>
+<ul>
+<li><p>监控</p>
+<p>不断检查master和slave是否正常运行</p>
+<p>master存活检测、master与slave运行情况检测</p>
+</li>
+<li><p>通知（提醒）</p>
+<p>当被监控的服务器出现问题时，向其他（哨兵间、客户端）发送通知</p>
+</li>
+<li><p>自动故障转移</p>
+<p>当master宕机时，断开master与slave连接，选取一个slave作为master，将其他slave连接到新的master，并告知客户端新的服务器地址</p>
+</li>
+</ul>
+<h2 id="1-配置哨兵"><a href="#1-配置哨兵" class="headerlink" title="1.配置哨兵"></a>1.配置哨兵</h2><h2 id="2-工作原理"><a href="#2-工作原理" class="headerlink" title="2.工作原理"></a>2.工作原理</h2><h3 id="阶段一：监控阶段"><a href="#阶段一：监控阶段" class="headerlink" title="阶段一：监控阶段"></a>阶段一：监控阶段</h3><ul>
+<li><p>sentinel向master发送【info】指令，并且建立了【cmd连接】（专门用来发送命令），并保存了master、slave、sentinel等相关的信息，且master也保存了<strong>SentinelRedisInstance</strong></p>
+</li>
+<li><p>由于【info】指令中获取了到了slave的信息，sentinel向每一个slave发送【info】指令并保存</p>
+</li>
+<li><p>新的sentinel_new连接master时，同样也是发送【info】指令，并发现master所保存的<strong>SentinelRedisInstance</strong>中已经有了sentinel，sentinel_new在此基础上保存相关信息，master也会更新信息</p>
+</li>
+<li><p>sentinel和sentinel_new之间建立<strong>发布订阅机制</strong>，且可以互发【ping】指令来确保相互连通</p>
+</li>
+</ul>
+<img src="/2022/02/12/Redis/image-20211109154034550.png" srcset="/img/loading.gif" lazyload alt="image-20211109154034550 " style="zoom:50%;">
+
+<img src="/2022/02/12/Redis/image-20211109154251588.png" srcset="/img/loading.gif" lazyload alt="image-20211109154251588 " style="zoom:67%;">
+
+<h3 id="阶段二：通知阶段"><a href="#阶段二：通知阶段" class="headerlink" title="阶段二：通知阶段"></a>阶段二：通知阶段</h3><p>维护长期sentinel间信息对等</p>
+<p>sentinel向master、slave通过cmd连接发送helllo信息，获取对应的工作状态，并在sentinel的发布订阅圈内进行信息互通。</p>
+<img src="/2022/02/12/Redis/image-20211109154533925.png" srcset="/img/loading.gif" lazyload alt="image-20211109154533925 " style="zoom:60%;">
+
+<h3 id="阶段三：故障转移阶段，只针对master"><a href="#阶段三：故障转移阶段，只针对master" class="headerlink" title="阶段三：故障转移阶段，只针对master"></a>阶段三：故障转移阶段，只针对master</h3><p><strong>1.发现故障：【master】宕机</strong></p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs smali">sentinel down-after-milliseconds &lt;masterName&gt; &lt;timeout&gt;<br>sentinel<span class="hljs-built_in"> monitor </span>&lt;masterName&gt; &lt;ip&gt; &lt;port&gt; &lt;quorum&gt;<br></code></pre></td></tr></table></figure>
+
+<p>（1）一个sentinel发现master宕机，主观下线【SDOWN】</p>
+<p>服务器在down-after-milliseconds给定的毫秒数之内， 没有返回 Sentinel 发送的【PING】命令（每秒一次）的回复， 或者返回一个错误， 那么 Sentinel 将这个服务器标记为主观下线（SDOWN ）</p>
+<p>（2）至少有quorum个sentinel确认master宕机，客观下线【ODOWN】【其中，quorum的值一般设置为sentinel个数的二分之一取顶】</p>
+<img src="/2022/02/12/Redis/image-20211109160056468.png" srcset="/img/loading.gif" lazyload alt="image-20211109160056468 " style="zoom:50%;">
+
+<p><strong>2.竞选自动故障迁移操作责任人</strong></p>
+<p>一个redis服务被判断为客观下线时，多个监视该服务的sentinel协商，选举一个领头sentinel，对该redis服务进行故障转移操作。</p>
+<ul>
+<li>所有的sentinel都有公平被选举成领头的资格。</li>
+<li>所有的sentinel都有且只有一次将某个sentinel选举成领头的机会（在一轮选举中），一旦选举某个sentinel为领头，不能更改。</li>
+<li>sentinel设置领头sentinel是先到先得，一旦当前sentinel设置了领头sentinel，以后要求设置sentinel为领头请求都会被拒绝。</li>
+<li>每个<strong>发现服务客观下线的sentinel</strong>，都会要求其他sentinel将自己设置成领头。</li>
+<li>当一个sentinel（源sentinel）向另一个sentinel（目sentinel）发送<strong>is-master-down-by-addr ip port current_epoch runid</strong>命令的时候，runid参数不是*，而是sentinel运行id，就表示源sentinel要求目标sentinel选举其为领头。</li>
+<li>源sentinel会检查目标sentinel对其要求设置成领头的回复，如果回复的leader_runid和leader_epoch为源sentinel，表示目标sentinel同意将源sentinel设置成领头。</li>
+<li>如果某个sentinel被<strong>半数以上【quorum】的sentinel设置成领头</strong>，那么该sentinel既为领头。</li>
+<li>如果在限定时间内，没有选举出领头sentinel，暂定一段时间，再选举。</li>
+</ul>
+<p><strong>3.slave选举</strong></p>
+<p>当一个sentinel准备好了要进行failover，并且收到了其他sentinel的授权，那么就需要选举出一个合适的slave来做为新的master。</p>
+<ul>
+<li>在线的</li>
+<li>响应快的</li>
+<li>和原master断开时间短的</li>
+<li>优先原则<ul>
+<li>优先级</li>
+<li>offset</li>
+<li>runid</li>
+</ul>
+</li>
+</ul>
+<p>在线、和原master失去联系小于10次、每次都不超过配置的最大失联时间，则成为master候选人列表，并根据下面顺序进行排序：</p>
+<p>1）sentinel首先会根据slaves的优先级来进行排序，优先级越小排名越靠前。<br>2）如果优先级相同，则查看复制的下标，哪个从master接收的复制数据多，哪个就靠前。<br>3）如果优先级和下标都相同，就选择进程ID较小的那个</p>
+<p><strong>4.新master上任，其他slave切换master，原master作为slave，故障回复后连接</strong></p>
+<p>向新的master发送slaveof no one</p>
+<p>向其他slave发送slave 新masterIP 新master端口</p>
+<h1 id="十二、集群cluster"><a href="#十二、集群cluster" class="headerlink" title="十二、集群cluster"></a>十二、集群cluster</h1><h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h2><p><strong>集群架构</strong></p>
+<ul>
+<li>集群就是使用网络将若干台计算机联通起来，并提供统一的管理方式，使其对外呈现单机的服务效果</li>
+</ul>
+<p><strong>集群作用</strong></p>
+<ul>
+<li>分散单台服务器的访问压力，实现<strong>负载均衡</strong></li>
+<li>分散单台服务器的储存压力，实现<strong>可扩展性</strong></li>
+<li>降低单台服务器宕机带来的<strong>业务灾难</strong></li>
+</ul>
+<h2 id="2-Redis集群结构设计"><a href="#2-Redis集群结构设计" class="headerlink" title="2. Redis集群结构设计"></a>2. Redis集群结构设计</h2><p><strong>数据存储设计</strong></p>
+<ul>
+<li>计算出key应该保存的位置</li>
+<li>将所有的储存空间切割成<strong>16384</strong>份，每台主机保存一部分（注意：每份代表的是一个存储空间，不是一个key的保存空间）</li>
+<li>将key按照计算出的结果放到对应的储存空间</li>
+</ul>
+<img src="/2022/02/12/Redis/image-20211110101631973.png" srcset="/img/loading.gif" lazyload alt="image-20211110101631973 " style="zoom:80%;">
+
+<img src="/2022/02/12/Redis/image-20211110101616711.png" srcset="/img/loading.gif" lazyload alt="image-20211110101616711 " style="zoom:68%;">
+
+<ul>
+<li>增强可扩展性</li>
+</ul>
+<p>&#x3D;&#x3D;每一个存储空间被称为“<strong>槽</strong>”（slot， 每一个小格子），增&#x2F;去节点——改变槽所存储的位置&#x3D;&#x3D;，只有master有槽，slave没有槽</p>
+<img src="/2022/02/12/Redis/image-20211110101825743-1636527404596.png" srcset="/img/loading.gif" lazyload alt="image-20211110101825743 " style="zoom:67%;">
+
+<p><strong>集群内部通讯设计</strong></p>
+<ul>
+<li>各个数据库互相通信，保存各个库中槽的编号数据</li>
+<li>一次命中，直接返回</li>
+<li>一次未命中，告知具体位置</li>
+</ul>
+<img src="/2022/02/12/Redis/集群存储通讯设计.png" srcset="/img/loading.gif" lazyload alt="集群存储通讯设计 " style="zoom:50%;">
+
+<h2 id="3-集群结构搭建"><a href="#3-集群结构搭建" class="headerlink" title="3.集群结构搭建"></a>3.集群结构搭建</h2><p><strong>cluster配置</strong></p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs pf"><span class="hljs-comment">#启动cluster配置</span><br>cluster-enabled yes|<span class="hljs-keyword">no</span><br><span class="hljs-comment">#配置文件名</span><br>cluster-config-file <span class="hljs-variable">&lt;filename&gt;</span><br><span class="hljs-comment">#节点服务响应超时时间，用于判定节点是否下线或切换为从节点</span><br>cluster-node-timeout <span class="hljs-variable">&lt;milliseconds&gt;</span><br><span class="hljs-comment">#(选配)master连接slave的最小数量</span><br>cluster-migration-barrier <span class="hljs-variable">&lt;count&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>cluster节点操作命令</strong></p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs pf"><span class="hljs-comment">#查看集群节点信息</span><br>cluster nodes<br><span class="hljs-comment">#进入一个从节点redis,切换其主节点</span><br>cluster replicate <span class="hljs-variable">&lt;master-id&gt;</span><br><span class="hljs-comment">#发现一个新节点，新增主节点</span><br>cluster meet ip:<span class="hljs-keyword">port</span><br><span class="hljs-comment">#忽略一个没有slot的节点</span><br>cluster forget <span class="hljs-variable">&lt;id&gt;</span><br><span class="hljs-comment">#手动故障转移</span><br>cluster failover<br></code></pre></td></tr></table></figure>
+
+<p><strong>cluster启动</strong></p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs axapta"><span class="hljs-meta">#启动所有的server</span><br>redis-<span class="hljs-keyword">server</span> redis.conf<br></code></pre></td></tr></table></figure>
+
+<img src="/2022/02/12/Redis/image-20211110134612200.png" srcset="/img/loading.gif" lazyload alt="image-20211110134612200 " style="zoom:67%;">
+
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs dns">#安装ruby和gem<br>#执行trib.rb，在trib.rb所在的目录下执行<br>#其中<span class="hljs-number">1</span>指slave:master的比例数<br>#后面是集群里的所有的nodes，前面的是master，后面的是slave，和slave:master比例数相对应<br>#如下，<span class="hljs-number">6379、6380</span>、<span class="hljs-number">6381</span>是master，对应的slave分别是<span class="hljs-number">6382、6383</span>、<span class="hljs-number">6384</span><br>./redis-trib.rb create --replicas <span class="hljs-number">1 127.0.0</span>.<span class="hljs-number">1:6379 127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0.1:6380</span> <span class="hljs-number">127.0.0.1</span>:<span class="hljs-number">6381 127.0</span>.<span class="hljs-number">0.1:6382</span> <span class="hljs-number">127.0.0.1</span>:<span class="hljs-number">6383 127.0</span>.<span class="hljs-number">0.1:6384</span><br></code></pre></td></tr></table></figure>
+
+<p>给master分配slot</p>
+ <img src="/2022/02/12/Redis/image-20211110135519669.png" srcset="/img/loading.gif" lazyload alt="image-20211110135519669 " style="zoom:67%;">
+
+<p>给master分配slave </p>
+<img src="/2022/02/12/Redis/image-20211110135444856.png" srcset="/img/loading.gif" lazyload alt="image-20211110135444856 " style="zoom:68%;">
+
+<p>同时在配置文件中记录分配的slots和主从关系</p>
+<img src="/2022/02/12/Redis/image-20211110135932299.png" srcset="/img/loading.gif" lazyload alt="image-20211110135932299" style="zoom:80%;">
+
+<p><strong>面向数据操作</strong></p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs avrasm"><span class="hljs-meta">#连接客户端时，将数据放在对应的槽里面，并自动切换端口</span><br>redis-<span class="hljs-keyword">cli</span> -c<br></code></pre></td></tr></table></figure>
+
+<img src="/2022/02/12/Redis/image-20211110140510889.png" srcset="/img/loading.gif" lazyload alt="image-20211110140510889 " style="zoom:68%;">
+
+<p><strong>主从下线和主从切换</strong></p>
+<p>如果主下线了，对应的从变成主，主如果后续上线，则变成从，其他的节点记录改变的信息</p>
+<p>如果从下线了，其他节点记录改变的信息</p>
+<h1 id="十三、企业级解决方案"><a href="#十三、企业级解决方案" class="headerlink" title="十三、企业级解决方案"></a>十三、企业级解决方案</h1><h2 id="1、缓存预热"><a href="#1、缓存预热" class="headerlink" title="1、缓存预热"></a>1、缓存预热</h2><p>服务器启动之后迅速宕机——</p>
+<ul>
+<li>请求数据量高</li>
+<li>主从之间数据吞吐量较大，数据同步操作频度高</li>
+</ul>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>日常统计数据访问记录，统计访问频度较高的<strong>热点数据</strong></li>
+<li>利用<strong>LRU</strong>(Least Recently Used)数据删除策略，构建数据留存队列</li>
+</ul>
+<p><strong>准备工作</strong></p>
+<ul>
+<li>将统计结果中的数据分类，根据级别，redis优先加载级别较高的热点数据</li>
+<li>利用分布式，多服务器同时进行数据读取，提速数据加载过程</li>
+<li>热点数据主从同时预热</li>
+</ul>
+<p><strong>实施</strong></p>
+<ul>
+<li>使用脚本程序固定数据预热过程</li>
+<li>如果条件允许，使用CDN（内容分发网络）</li>
+</ul>
+<h2 id="2、缓存雪崩"><a href="#2、缓存雪崩" class="headerlink" title="2、缓存雪崩"></a>2、缓存雪崩</h2><p><strong>问题：    短时间内大量Key集中过期</strong></p>
+<ul>
+<li>现象：<ul>
+<li>系统平稳运行过程中，忽然数据库连接量激增【在此期间请求访问过期的数据，redis未命中，redis向数据库索取数据】</li>
+<li>应用数据库无法及时处理请求，出现408、500错误页面、数据库崩溃【客户拿不到数据反复刷新页面，redis大量请求积压，开始出现超时现象，数据库流量激增，数据库崩溃】</li>
+<li>应用服务器崩溃、redis服务器崩溃、redis集群瓦解【即使重启，仍然面对缓存中无数据可用的情况】</li>
+</ul>
+</li>
+<li>解决方案：<ul>
+<li>构建多级缓存架构：Nginx缓存+Redis缓存+ehcache缓存</li>
+<li>优化Mysql耗时业务：例如超时查询、耗时较高的事务</li>
+<li>灾难预警机制：<ul>
+<li>监控Redis服务器性能指标：CPU占用、使用率，内存容量，查询平均响应时间，线程数</li>
+</ul>
+</li>
+<li><strong>LRU</strong>换成<strong>LFU</strong>(Least Frequently Used)</li>
+<li>数据有效期策略调整<ul>
+<li>根据业务数据<strong>过期时间进行分类错峰</strong></li>
+<li>过期时间使用固定时间+随机值的形式</li>
+</ul>
+</li>
+<li><strong>超热数据</strong>使用永久key</li>
+<li>定期维护【对即将过期的数据做访问量分析：热点数据进行延时】</li>
+<li>加锁【慎用！】</li>
+</ul>
+</li>
+</ul>
+<p><strong>问题：   Redis中某个key过期且单个key高热</strong></p>
+<ul>
+<li>现象<ul>
+<li>系统平稳运行过程中，数据库连接量瞬间激增</li>
+<li>Redis服务器无大量key过期，内存平稳无波动，且Redis的CPU正常</li>
+<li>数据库崩溃</li>
+</ul>
+</li>
+<li>解决方案：<ul>
+<li>预先设定【例如购物节的主打产品等】</li>
+<li>现场调整：监控访问量，对自然流量激增的数据延长过期时间或设置为永久key</li>
+<li>后台刷新数据：启动定时任务，高峰期来临时刷新数据有效期，确保不丢失</li>
+<li>二级缓存：二级缓存设置不同的生效时间，保障不会被<strong>同时</strong>淘汰</li>
+<li>加锁：分布式锁，防止被击穿，注意性能瓶颈【慎重】</li>
+</ul>
+</li>
+</ul>
+<h2 id="4、缓存穿透"><a href="#4、缓存穿透" class="headerlink" title="4、缓存穿透"></a>4、缓存穿透</h2><p><strong>问题：  Redis中出现大量未击中，出现非正常URL访问</strong>（大概率黑客攻击）</p>
+<ul>
+<li>现象<ul>
+<li>获取的数据在数据库中也不存在，数据库查询未得到对应的数据</li>
+</ul>
+</li>
+<li>解决方案<ul>
+<li>缓存null</li>
+<li>白名单策略<ul>
+<li>提前预热各种分类数据id对应的bitmaps，id作为bitmaps的offset，加载到正常数据时放行，异常数据直接拦截</li>
+<li>使用<strong>布隆过滤器</strong></li>
+</ul>
+</li>
+<li>监控<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="5、性能指标监控"><a href="#5、性能指标监控" class="headerlink" title="5、性能指标监控"></a>5、性能指标监控</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/02/12/SpringBoot/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SpringBoot笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/09/MyBatis/">
+                        <span class="hidden-mobile">MyBatis笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"Uwont9NFwGQksbcDo3iLGJP4-gzGzoHsz","appKey":"pz0xMNx3jRHmteyd0eudDDqs","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://uwont9nf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          Fluid.plugins.initFancyBox('#valine .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
