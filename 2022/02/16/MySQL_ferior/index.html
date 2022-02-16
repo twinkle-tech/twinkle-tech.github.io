@@ -1,0 +1,767 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、mysql的架构介绍not only sql——nosql 关系型数据库 插件式的存储引擎架构将查询和其他的系统任务以及数据的存储提取相分离 1.连接层主要完成一些类似于连接处理、授权认证及相关的方案， 线程池的概念——为通过认证安全接入的客户端提供线程 在该层上可以实现基于SSL的安全链接 2.服务层核心服务功能，如SQL接口、缓存的查询、SQL的分析和优化及部分内置函数的执行 所有跨存储引">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL高级笔记">
+<meta property="og:url" content="https://yoursite.com/2022/02/16/MySQL_ferior/index.html">
+<meta property="og:site_name" content="Twinkle">
+<meta property="og:description" content="一、mysql的架构介绍not only sql——nosql 关系型数据库 插件式的存储引擎架构将查询和其他的系统任务以及数据的存储提取相分离 1.连接层主要完成一些类似于连接处理、授权认证及相关的方案， 线程池的概念——为通过认证安全接入的客户端提供线程 在该层上可以实现基于SSL的安全链接 2.服务层核心服务功能，如SQL接口、缓存的查询、SQL的分析和优化及部分内置函数的执行 所有跨存储引">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yoursite.com/2022/02/16/MySQL_ferior/1.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/16/MySQL_ferior/image-20220216133009669.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/16/MySQL_ferior/image-20220216130546946.png">
+<meta property="og:image" content="https://yoursite.com/2022/02/16/MySQL_ferior/2.png">
+<meta property="article:published_time" content="2022-02-16T02:24:09.000Z">
+<meta property="article:modified_time" content="2022-02-16T09:11:52.163Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yoursite.com/2022/02/16/MySQL_ferior/1.png">
+  
+  
+  <title>MySQL高级笔记 - Twinkle</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Twinkle&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="MySQL高级笔记">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-16 10:24" pubdate>
+        2022年2月16日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.2k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      44 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MySQL高级笔记</h1>
+            
+            <div class="markdown-body">
+              <h1 id="一、mysql的架构介绍"><a href="#一、mysql的架构介绍" class="headerlink" title="一、mysql的架构介绍"></a>一、mysql的架构介绍</h1><p>not only sql——nosql</p>
+<p>关系型数据库</p>
+<p>插件式的存储引擎架构将查询和其他的系统任务以及数据的存储提取相分离</p>
+<h2 id="1-连接层"><a href="#1-连接层" class="headerlink" title="1.连接层"></a>1.连接层</h2><p>主要完成一些类似于连接处理、授权认证及相关的方案，</p>
+<p>线程池的概念——为通过认证安全接入的客户端提供线程</p>
+<p>在该层上可以实现基于SSL的安全链接</p>
+<h2 id="2-服务层"><a href="#2-服务层" class="headerlink" title="2.服务层"></a>2.服务层</h2><p>核心服务功能，如SQL接口、缓存的查询、SQL的分析和优化及部分内置函数的执行</p>
+<p>所有跨存储引擎的功能，如过程、函数等，服务器会解析查询并创建相应的内部解析数，并对其完成相应的优化（如确定查询表的顺序，是否利用搜索等），最后生成相应的执行操作。</p>
+<p>如果是select语句，服务器还会查询内部的缓存</p>
+<h2 id="3-引擎层"><a href="#3-引擎层" class="headerlink" title="3. 引擎层"></a>3. 引擎层</h2><p>存储引擎层，服务器通过API与存储引擎进行通信，不同的存储引擎具有不同的功能（主MyISAM和InnoDB）</p>
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>MyISAM</th>
+<th>InnoDB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主外键</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>事务</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>行表锁</td>
+<td>表锁，即使操作一条记录，也会锁住整个表<br>不适合高并发的操作</td>
+<td>支持表锁+行锁，行锁：操作时只锁住一行，不对其他行有影响<br>适合高并发的操作</td>
+</tr>
+<tr>
+<td>缓存</td>
+<td>只缓存索引，不缓存真实数据</td>
+<td>同时缓存索引和真实数据，对内存要求较高<br>而且内存大小对性能有决定性影响</td>
+</tr>
+<tr>
+<td>表空间</td>
+<td>小</td>
+<td>大</td>
+</tr>
+<tr>
+<td>关注点</td>
+<td>性能</td>
+<td>事务</td>
+</tr>
+<tr>
+<td>默认安装</td>
+<td>Y</td>
+<td>Y</td>
+</tr>
+</tbody></table>
+<h2 id="4-存储层"><a href="#4-存储层" class="headerlink" title="4.存储层"></a>4.存储层</h2><p>将数据存储在运行于裸设备的文件系统上，并完成与存储引擎的交互</p>
+<h1 id="x3D-x3D-二、索引优化分析-x3D-x3D"><a href="#x3D-x3D-二、索引优化分析-x3D-x3D" class="headerlink" title="&#x3D;&#x3D;二、索引优化分析&#x3D;&#x3D;"></a>&#x3D;&#x3D;二、索引优化分析&#x3D;&#x3D;</h1><p>性能下降的原因分析：</p>
+<p>1.查询语句写的性能不好</p>
+<p>2.索引失效（a.没有建索引  b.索引没有用上）</p>
+<p>3.关联查询太多join</p>
+<p>4.服务器调优及各个参数设置</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">/</span><span class="hljs-operator">/</span>单值索引<br><span class="hljs-keyword">create</span> index idx_user_name <span class="hljs-keyword">on</span> <span class="hljs-keyword">user</span>(name);<br><span class="hljs-operator">/</span><span class="hljs-operator">/</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="1-真实查询顺序"><a href="#1-真实查询顺序" class="headerlink" title="1. 真实查询顺序"></a>1. 真实查询顺序</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-number">1.</span><span class="hljs-keyword">FROM</span> <span class="hljs-operator">&lt;</span>left_table<span class="hljs-operator">&gt;</span><br><span class="hljs-number">2.</span><span class="hljs-keyword">ON</span> <span class="hljs-operator">&lt;</span>join_condition<span class="hljs-operator">&gt;</span><br><span class="hljs-number">3.</span><span class="hljs-operator">&lt;</span>join_type<span class="hljs-operator">&gt;</span> <span class="hljs-keyword">JOIN</span> <span class="hljs-operator">&lt;</span>right_table<span class="hljs-operator">&gt;</span><br><span class="hljs-number">4.</span><span class="hljs-keyword">WHERE</span> <span class="hljs-operator">&lt;</span>where_conditon<span class="hljs-operator">&gt;</span><br><span class="hljs-number">5.</span><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> <span class="hljs-operator">&lt;</span>group_by_list<span class="hljs-operator">&gt;</span><br><span class="hljs-number">6.</span><span class="hljs-keyword">HAVING</span><br><span class="hljs-number">7.</span><span class="hljs-keyword">SELECT</span><br><span class="hljs-number">8.</span><span class="hljs-keyword">DISTINCT</span> <span class="hljs-operator">&lt;</span>select_list<span class="hljs-operator">&gt;</span><br><span class="hljs-number">9.</span><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> <span class="hljs-operator">&lt;</span>order_by_condition<span class="hljs-operator">&gt;</span><br><span class="hljs-number">10.</span>LIMIT <span class="hljs-operator">&lt;</span>limit_number<span class="hljs-operator">&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="2-7种Join"><a href="#2-7种Join" class="headerlink" title="2. 7种Join"></a>2. 7种Join</h2><img src="/2022/02/16/MySQL_ferior/1.png" srcset="/img/loading.gif" lazyload alt="1 " style="zoom:67%;">
+
+<p>注：</p>
+<ul>
+<li><p>以第一个LEFT JOIN为例，红色部分的意思不是说只代表A，而是A的特有部分和AB的共有部分，查出来的数据也包含满足on条件的B表的数据（没有的用null填充）</p>
+</li>
+<li><p>where b.key is NULL 就指代着仅能在A表中查出来的数据（此时对应的B表的属性为NULL）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-number">1.</span><span class="hljs-keyword">select</span> A.id,A.name,B.factory <span class="hljs-keyword">from</span> table_a A <span class="hljs-keyword">left</span> <span class="hljs-keyword">join</span> table_b B <span class="hljs-keyword">on</span> A.id<span class="hljs-operator">=</span>B.id;<br><span class="hljs-number">2.</span><span class="hljs-keyword">select</span> A.id,A.name,B.factory <span class="hljs-keyword">from</span> table_a A <span class="hljs-keyword">left</span> <span class="hljs-keyword">join</span> table_b B <span class="hljs-keyword">on</span> A.id<span class="hljs-operator">=</span>B.id <span class="hljs-keyword">where</span> b.key <span class="hljs-keyword">is</span> <span class="hljs-keyword">NULL</span>;<br></code></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>北京</td>
+</tr>
+<tr>
+<td>2</td>
+<td>上海</td>
+</tr>
+<tr>
+<td>3</td>
+<td>深圳</td>
+</tr>
+<tr>
+<td>4</td>
+<td>广州</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>factory</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>阿里</td>
+</tr>
+<tr>
+<td>3</td>
+<td>淘宝</td>
+</tr>
+<tr>
+<td>5</td>
+<td>美团</td>
+</tr>
+<tr>
+<td>6</td>
+<td>携程</td>
+</tr>
+</tbody></table>
+<p>结果：</p>
+<p>1.以A表为主表，B表不能匹配的用null补全</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>factory</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>北京</td>
+<td>阿里</td>
+</tr>
+<tr>
+<td>2</td>
+<td>上海</td>
+<td>null</td>
+</tr>
+<tr>
+<td>3</td>
+<td>深圳</td>
+<td>淘宝</td>
+</tr>
+<tr>
+<td>4</td>
+<td>广州</td>
+<td>null</td>
+</tr>
+</tbody></table>
+<p>2.只有A表特有行数</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>factory</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+<td>上海</td>
+<td>null</td>
+</tr>
+<tr>
+<td>4</td>
+<td>广州</td>
+<td>null</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h2 id="3-索引"><a href="#3-索引" class="headerlink" title="3.索引"></a>3.索引</h2><p>帮助MySQL高效获取数据的<strong>排好序的快速查找数据结构</strong>，索引的目的在于提高查询效率，可以类比字典</p>
+<p><strong>用到索引的地方</strong>：</p>
+<p>查询和ORDER BY都会用到索引</p>
+<p>√ &#x3D;&#x3D;代理主键&#x3D;&#x3D;：就是充当主键的字段本身不具有业务意义，只具有主键作用【一般主键采用这种方式】</p>
+<p>采用代理主键需要设置主键自增：尽量减少触发页分裂和页合并，维护索引</p>
+<p>&#x3D;&#x3D;自然主键&#x3D;&#x3D;：就是充当主键的字段本身具有一定的含义，是构成记录的组成部分，比如学生的学号，除了充当主键之外，同时也是学生记录的重要组成部分。</p>
+<p>优势：</p>
+<ul>
+<li>提高数据检索的效率，降低数据库的IO成本</li>
+<li>降低数据排序的成本，降低CPU消耗</li>
+</ul>
+<p>劣势：</p>
+<ul>
+<li>索引也需要占用磁盘空间，所以索引并不是越多越好，按需建立索引</li>
+<li>降低更新表的速度（如对表进行INSERT  UPDATE  DELETE操作时，在更新表的同时，mysql不仅要保存数据，还要保存索引文件每次更新添加了索引列的字段）</li>
+</ul>
+<h3 id="3-1-索引的分类"><a href="#3-1-索引的分类" class="headerlink" title="3.1 索引的分类"></a>3.1 索引的分类</h3><ul>
+<li>主键索引：是一种唯一性索引【符合唯一索引的特点】，但是它必须指定为PRIMARY KEY，每个表只能有一个主键【可以是联合主键，并不只是一列】，mysql会帮忙给当前主键创建索引</li>
+<li>唯一索引：索引列的值必须唯一，但是允许有空值</li>
+<li>普通【单值】索引：一个索引只包含单个列，一个表可以有多个单列索引，在该字段的B+树的叶子节点中存储的是主键值，并不是数据本身，需要进行两次B+树搜索</li>
+<li>组合【复合】索引：一个索引包含多个列   【最左匹配原则】【索引下推】【索引覆盖】</li>
+<li>全文索引：索引类型为FULLTEXT，全文索引可以再varchar  char  text类型的列上创建</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql">创建：<br><span class="hljs-keyword">create</span> [<span class="hljs-keyword">unique</span>] index indexName <span class="hljs-keyword">on</span> mytable(columnname(length));<br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> mytable <span class="hljs-keyword">add</span> [<span class="hljs-keyword">unique</span>] index indexName <span class="hljs-keyword">on</span> (columnname(length));<br><br>删除：<br><span class="hljs-keyword">drop</span> index[indexName] <span class="hljs-keyword">on</span> mytable;<br></code></pre></td></tr></table></figure>
+
+<p>【索引覆盖】</p>
+<p>根据某个已建立索引的字段可以得到需要查询的数据，不需要回表</p>
+<p>【最左匹配原则】</p>
+<p><strong>只要查询条件中带有</strong>最左边的列，那么查询就会使用到索引</p>
+<p>【索引下推】</p>
+<p><strong>前提</strong>：组合索引中根据最左匹配原则，先查询出最左边的行匹配的数据，再回表依次比较是否符合全部条件</p>
+<p><strong>示例</strong>：</p>
+<p>假设有一张people表,包含字段name、address、first_name<br>索引为(name,address,first_name)<br>然后我们执行下面的查询</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> person  <span class="hljs-keyword">WHERE</span> `name` <span class="hljs-operator">=</span> &quot;1&quot; <span class="hljs-keyword">AND</span> `address` <span class="hljs-keyword">LIKE</span> &quot;%222&quot; <span class="hljs-keyword">and</span> first_name <span class="hljs-keyword">LIKE</span> &quot;%222&quot;;<br></code></pre></td></tr></table></figure>
+
+<p>如果不使用索引条件下推优化的话，MySQL只能根据索引查询出name&#x3D;1的所有行，把符合规则的数据拉取到mysql的server层，然后在server层再依次比较是否符合全部条件。</p>
+<p>当使用了索引条件下推优化技术后，可以通过索引中存储的数据判断当前索引对应的数据是否符合条件，将符合的结果返回给mysql的server。【查看执行计划时发现extra一栏中有Using index condition信息，说明使用了索引下推。】</p>
+<h3 id="3-2-索引底层数据结构"><a href="#3-2-索引底层数据结构" class="headerlink" title="3.2 索引底层数据结构"></a>3.2 索引底层数据结构</h3><p><strong>InnoDB和MyISAM用B+树，MEMORY用哈希索引</strong></p>
+<p>1.hash表缺点：</p>
+<ul>
+<li>将所有的数据文件保存在内存中，比较消耗内存空间</li>
+<li>基本上都是范围查询，而不是等值查询，不太合适</li>
+</ul>
+<p>2.二叉树&amp;红黑树缺点：</p>
+<p>因为树的深度过深而造成io次数变多，影像读取的效率</p>
+<p><strong>&#x3D;&#x3D;3.B树和B+树&#x3D;&#x3D;</strong></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/54102723">B树和B+树的比较</a></p>
+<p>一个m阶B+树的底层结构特点：</p>
+<ul>
+<li>中间节点不保存数据，所有的数据保存在叶子节点中</li>
+<li>叶子节点本身依照关键字的大小自小而大顺序连接，组成了链式环结构</li>
+<li>索引最左匹配特性</li>
+</ul>
+<p>B+树相较于B树用于Mysql的优点：</p>
+<ul>
+<li>单一节点存储更多的元素，即中间节点可以有更多的区间，使得查询的IO次数更少。</li>
+<li>所有查询都要查找到叶子节点，查询性能稳定，是顺序io不是随机io</li>
+<li>所有叶子节点形成有序链表，便于范围查询。</li>
+</ul>
+<img src="/2022/02/16/MySQL_ferior/image-20220216133009669.png" srcset="/img/loading.gif" lazyload alt="image-20220216133009669" style="zoom:80%;">
+
+<h3 id="3-3-InnoDB和MylSAM如何建立索引"><a href="#3-3-InnoDB和MylSAM如何建立索引" class="headerlink" title="3.3 InnoDB和MylSAM如何建立索引"></a>3.3 InnoDB和MylSAM如何建立索引</h3><p><strong>1.InnoDB</strong>【默认】</p>
+<p>文件：.frm文件和.idb文件</p>
+<p>InnoDB对主键创建索引，叶子节点数据，如果没有主键，则选择唯一键创建索引，如果都没有，会生成6位的row_id作为主键创建索引（只不过这个row_id对用户是不可见的）</p>
+<p>【<strong>回表</strong>（回到了主键的表）】如果是非主键的其他字段创建普通索引，在该B+树的叶子节点中保存的是该数据的对应主键值，找到该主键后再去主键B+树中找到对应数据（相当于找了两次B+树）</p>
+<p><strong>2.MylSAM</strong></p>
+<p>文件：.frm文件和.MYI文件【储存索引】和.MYD文件【储存数据】</p>
+<img src="/2022/02/16/MySQL_ferior/image-20220216130546946.png" srcset="/img/loading.gif" lazyload alt="image-20220216130546946 " style="zoom:80%;">
+
+<p>叶子节点中储存的是地址，该地址指向.MYD中的数据</p>
+<h3 id="3-4-索引匹配方式"><a href="#3-4-索引匹配方式" class="headerlink" title="3.4 索引匹配方式"></a>3.4 索引匹配方式</h3><p>1.全值匹配</p>
+<p>2.匹配最左前缀</p>
+<p>3.匹配列前缀：如果是like，%abc不会触发索引，只有abc%才能触发索引</p>
+<p>4.匹配范围值</p>
+<p>5.精确匹配某一列并范围匹配另外一列</p>
+<p>6.只访问索引的查询【本质上是索引覆盖】</p>
+<h3 id="3-5-聚簇索引和非聚簇索引"><a href="#3-5-聚簇索引和非聚簇索引" class="headerlink" title="3.5 聚簇索引和非聚簇索引"></a>3.5 聚簇索引和非聚簇索引</h3><p>聚簇索引：不是单独的索引类型，而是一种数据存储方式，指的是数据行和相邻的键值【一般是主键值】紧凑地储存在一起【idb文件】【主键索引是聚簇索引】</p>
+<p>非聚簇索引：数据文件和索引文件分开存放</p>
+<h1 id="三、MySQL的MVCC及实现原理"><a href="#三、MySQL的MVCC及实现原理" class="headerlink" title="三、MySQL的MVCC及实现原理"></a>三、MySQL的MVCC及实现原理</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/SnailMann/article/details/94724197">参考博客</a></p>
+<p>MVCC ： 多版本并发控制 Multi-Version Concurrency Control</p>
+<p><strong>MVCC</strong> 在 <strong>MySQL InnoDB</strong> 中的实现主要是为了提高数据库并发性能，用更好的方式去处理<strong>读-写</strong>冲突，做到即使有读写冲突时，也能做到不加锁，非阻塞并发读【维持一个数据的多个版本，使得读写操作没有冲突】</p>
+<h2 id="1-实现原理"><a href="#1-实现原理" class="headerlink" title="1.实现原理"></a>1.实现原理</h2><p>主要是依赖记录中的3个隐式字段，undo日志和Read View来实现的。</p>
+<p>不同事务或者相同事务的对同一记录的修改，会导致该记录的<code>undo log</code>成为一条记录版本线性表，既链表，<code>undo log</code> 的链首就是最新的旧记录，链尾就是最早的旧记录</p>
+<h3 id="1-1-隐式字段"><a href="#1-1-隐式字段" class="headerlink" title="1.1 隐式字段"></a>1.1 隐式字段</h3><p>每行记录除了我们自定义的字段外，还有数据库隐式定义的 <code>DB_TRX_ID</code>, <code>DB_ROLL_PTR</code>, <code>DB_ROW_ID</code> 等字段</p>
+<ul>
+<li>DB_TRX_ID</li>
+</ul>
+<p>​    6 byte，最近修改(修改&#x2F;插入)事务 ID：记录创建这条记录&#x2F;最后一次修改该记录的事务 ID</p>
+<ul>
+<li>DB_ROLL_PTR</li>
+</ul>
+<p>​    7 byte，回滚指针，指向这条记录的上一个版本（存储于 rollback segment 里）</p>
+<ul>
+<li>DB_ROW_ID</li>
+</ul>
+<p>​    6 byte，隐含的自增 ID（隐藏主键），如果数据表没有主键，InnoDB 会自动以DB_ROW_ID产生一个聚簇索引</p>
+<ul>
+<li>实际还有一个删除 flag 隐藏字段, 既记录被更新或删除并不代表真的删除，而是删除 flag 变了</li>
+</ul>
+<img src="/2022/02/16/MySQL_ferior/2.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述 " style="zoom:100%;">
+
+<h3 id="1-2-undo日志"><a href="#1-2-undo日志" class="headerlink" title="1.2 undo日志"></a>1.2 undo日志</h3><p>主要分为两种：</p>
+<ul>
+<li>insert undo log ：</li>
+</ul>
+<p>​    代表事务在insert新纪录时产生的undo log，只在事务回滚时需要，并且在事务提交后可以立即被丢弃</p>
+<ul>
+<li>update undo log：</li>
+</ul>
+<p>​    事务在进行 <code>update</code> 或 <code>delete</code> 时产生的 <code>undo log</code> ; 不仅在事务回滚时需要，在快照读时也需要；所以不能随便删除，只有在快速读或事务回滚不涉及该日志时，对应的日志才会被 <code>purge</code> 线程统一清除</p>
+<h3 id="1-3-Read-View"><a href="#1-3-Read-View" class="headerlink" title="1.3 Read View"></a>1.3 Read View</h3><p>事务进行快照读操作的时候产生的读视图</p>
+<p>Read View遵循一个可见性算法，主要是将要被修改的数据的最新记录中的 DB_TRX_ID（即当前事务 ID ）取出来，与系统当前其他活跃事务的 ID 去对比（由 Read View 维护），如果 DB_TRX_ID 跟 Read View 的属性做了某些比较，不符合可见性，那就通过DB_ROLL_PTR 回滚指针去取出 Undo Log 中的 DB_TRX_ID 再比较，即遍历链表的 DB_TRX_ID（从链首到链尾，即从最近的一次修改查起），直到找到满足特定条件的 DB_TRX_ID , 那么这个 DB_TRX_ID 所在的旧记录就是当前事务能看见的最新老版本</p>
+<ul>
+<li>trx_list用于维护Read View生成时刻系统正活跃的事务ID列表 </li>
+<li>up_limit_id：trx_lixt列表中事务ID最小的ID</li>
+<li>low_limit_id：目前已经出现过的事务ID的最大值+1</li>
+</ul>
+<p>1.首先比较 DB_TRX_ID &lt; up_limit_id , 如果小于，则当前事务能看到 DB_TRX_ID 所在的记录，如果大于等于进入下一个判断<br>2.接下来判断 DB_TRX_ID &gt;&#x3D; low_limit_id , 如果大于等于则代表 DB_TRX_ID 所在的记录在 Read View 生成后才出现的，那对当前事务肯定不可见，如果小于则进入下一个判断<br>3.判断 DB_TRX_ID 是否在活跃事务之中，trx_list.contains (DB_TRX_ID)，如果在，则代表我 Read View 生成时刻，你这个事务还在活跃，还没有 Commit，你修改的数据，我当前事务也是看不见的；如果不在，则说明，你这个事务在 Read View 生成之前就已经 Commit 了，你修改的结果，我当前事务是能看见的</p>
+<h1 id="四、mysql锁机制"><a href="#四、mysql锁机制" class="headerlink" title="四、mysql锁机制"></a>四、mysql锁机制</h1><h1 id="五、主从复制"><a href="#五、主从复制" class="headerlink" title="五、主从复制"></a>五、主从复制</h1><h1 id="六、查询截取分析"><a href="#六、查询截取分析" class="headerlink" title="六、查询截取分析"></a>六、查询截取分析</h1>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/12/Spring/">
+                        <span class="hidden-mobile">Spring笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"Uwont9NFwGQksbcDo3iLGJP4-gzGzoHsz","appKey":"pz0xMNx3jRHmteyd0eudDDqs","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://uwont9nf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          Fluid.plugins.initFancyBox('#valine .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
