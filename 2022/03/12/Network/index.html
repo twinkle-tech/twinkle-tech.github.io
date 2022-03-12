@@ -1,0 +1,705 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、相关概念1、 Bridge网桥Bridge 也是一种虚拟网络设备，所以具备虚拟网络设备的所有特性，比如可以配置 IP、MAC 等 除此之外，Bridge 还是一个交换机，具有交换机所有的功能。在链路层实现中继，对帧进行转发，根据MAC分区块，可隔离碰撞，将网络中的多个网段在数据链路层连接起来的网络设备。 Bridge 有多个端口，数据可以从多个端口进，从多个端口出。Bridge 的这个特性让它">
+<meta property="og:type" content="article">
+<meta property="og:title" content="openvswitch和docker">
+<meta property="og:url" content="https://yoursite.com/2022/03/12/Network/index.html">
+<meta property="og:site_name" content="Twinkle">
+<meta property="og:description" content="一、相关概念1、 Bridge网桥Bridge 也是一种虚拟网络设备，所以具备虚拟网络设备的所有特性，比如可以配置 IP、MAC 等 除此之外，Bridge 还是一个交换机，具有交换机所有的功能。在链路层实现中继，对帧进行转发，根据MAC分区块，可隔离碰撞，将网络中的多个网段在数据链路层连接起来的网络设备。 Bridge 有多个端口，数据可以从多个端口进，从多个端口出。Bridge 的这个特性让它">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/image-20211117103932680.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/431521-20190314124732905-488704574.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/431521-20190314124742281-1232457118.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/image-20211117112302271.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/431521-20171224101241412-2026587570.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/431521-20171224102317818-1090106576.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/431521-20171224102359443-1589744207.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/431521-20171224102412506-951322711.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/image-20211118153220242.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/20181022221037460">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/20200418213801334.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/2020041823075262.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/20170908213017326">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/1060878-20210509130057172-1672367703.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/70.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/105c69035413b09fb429ed4022a6e0d8.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/image-20211207103928962.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/image-20211129164150144.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/image-20211223153025770.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/v2-b846eca8a0535aab5698183fb05e5efd_720w.jpg">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/v2-9b885ca94c4f33adeaa7df5578239c5a_720w.jpg">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/image-20211123155946890.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/image-20211125141426185.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/20191013101404753.png">
+<meta property="og:image" content="https://yoursite.com/2022/03/12/Network/image-20211124212308772.png">
+<meta property="article:published_time" content="2022-03-12T02:24:09.000Z">
+<meta property="article:modified_time" content="2022-03-12T07:39:46.915Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="openvswitch">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yoursite.com/2022/03/12/Network/image-20211117103932680.png">
+  
+  
+  <title>openvswitch和docker - Twinkle</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Twinkle&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="openvswitch和docker">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-12 10:24" pubdate>
+        2022年3月12日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      18k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      148 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">openvswitch和docker</h1>
+            
+            <div class="markdown-body">
+              <h1 id="一、相关概念"><a href="#一、相关概念" class="headerlink" title="一、相关概念"></a>一、相关概念</h1><h2 id="1、-Bridge网桥"><a href="#1、-Bridge网桥" class="headerlink" title="1、 Bridge网桥"></a>1、 Bridge网桥</h2><p>Bridge 也是一种虚拟网络设备，所以具备虚拟网络设备的所有特性，比如可以配置 IP、MAC 等</p>
+<p>除此之外，<strong>Bridge 还是一个交换机</strong>，具有交换机所有的功能。在链路层实现中继，对帧进行转发，根据MAC分区块，可隔离碰撞，将网络中的多个网段在数据链路层连接起来的网络设备。</p>
+<p>Bridge 有多个端口，数据可以从多个端口进，从多个端口出。Bridge 的这个特性让它可以接入其他的网络设备，比如物理设备、虚拟设备、VLAN 设备等，其中，<strong>eth0为物理网卡，tap0为虚拟网卡</strong></p>
+<img src="/2022/03/12/Network/image-20211117103932680.png" srcset="/img/loading.gif" lazyload alt="image-20211117103932680 " style="zoom:80%;">
+
+<p>&#x3D;&#x3D;Bridge设备通常结合tap&#x2F;tun、 veth-pair设备用于虚拟机、网络容器里。&#x3D;&#x3D;</p>
+<ul>
+<li><p>虚拟机：</p>
+<img src="/2022/03/12/Network/431521-20190314124732905-488704574.png" srcset="/img/loading.gif" lazyload alt="img " style="zoom:200%;">
+
+<p>同主机虚拟机发出的数据包通过tap&#x2F;tun设备先到达br0，经过eth0发送到物理网络中</p>
+</li>
+<li><p>容器网络</p>
+<img src="/2022/03/12/Network/431521-20190314124742281-1232457118.png" srcset="/img/loading.gif" lazyload alt="img " style="zoom:80%;"></li>
+</ul>
+<p>一般使用veth-pair来连接容器和主机，因为在主机看来，容器就是一个个被隔离的namespace，用veth-pair更有优势。</p>
+<h3 id="（1）VLAN-虚拟局域网"><a href="#（1）VLAN-虚拟局域网" class="headerlink" title="（1）VLAN  虚拟局域网"></a>（1）VLAN  虚拟局域网</h3><p>对局域网LAN的软件化升级，一般两台计算机通过一台交换机连接在一起就构成了LAN，但是容易形成广播风暴，造成网络拥塞，且广播包无法进行隔离</p>
+<p>解决问题的方案是VLAN：Bridge可以将一个物理网卡设备eth0划分成两个子设备eth0:10，eth0:20，分别挂到Bridge虚拟出的两个VLAN上，同样，两个VM的虚拟网卡设备vnet0和vnet1也分别挂到相应的VLAN上，这样就实现了隔离。</p>
+<img src="/2022/03/12/Network/image-20211117112302271.png" srcset="/img/loading.gif" lazyload alt="image-20211117112302271 " style="zoom:67%;">
+
+<p>**&#x3D;&#x3D;Linux Bridge + VLAN&#x3D;&#x3D;**便可以构成和一个物理交换机具有相同功能的虚拟交换机了。</p>
+<h2 id="2、-NAT"><a href="#2、-NAT" class="headerlink" title="2、 NAT"></a>2、 NAT</h2><p>当虚拟机启用了NAT模式之后，宿主机便通过<strong>DHCP</strong>为其生成可以访问外网的IP。</p>
+<h1 id="二、OVS"><a href="#二、OVS" class="headerlink" title="二、OVS"></a>二、OVS</h1><h2 id="2-1-OVS的概念和工作流程"><a href="#2-1-OVS的概念和工作流程" class="headerlink" title="2.1 OVS的概念和工作流程"></a>2.1 OVS的概念和工作流程</h2><ol>
+<li>方便网络管理与监控。比如可以分析网络中流淌的数据包是来自哪个VM、哪个OS及哪个用户，可以借助OVS的工具来达到    <strong>怎么达到？监控？</strong></li>
+<li>加速数据包的寻路与转发。   Bridge单纯基于MAC地址学习的转发规则，OVS引入<strong>流缓存</strong>的机制，加快数据包的转发效率</li>
+<li>基于SDN控制面与数据面分离的思想。OVS的控制面负责流表的学习与下发，数据面负责具体的转发动作。</li>
+<li>隧道协议支持。Bridge只支持VxLAN，OVS支持gre&#x2F;VxLAN&#x2F;IPsec等。</li>
+<li>…</li>
+</ol>
+<p>​    </p>
+<img src="/2022/03/12/Network/431521-20171224101241412-2026587570.png" srcset="/img/loading.gif" lazyload alt="img " style="zoom:80%;">
+
+<p>数据面：<strong>ovs-vswitchd</strong>和<strong>Datapath</strong></p>
+<p>Datapath：负责具体的收发包，而ovs-vswitchd通过Controller下发的流表规则指导datapath如何转发包。</p>
+<p>控制面：<strong>Controller</strong>（OpenFlow控制器），OVS支持OpenFlow协议，是<strong>控制面和数据面通信的一套协议</strong>，是一个独立的完整的&#x3D;&#x3D;流表协议&#x3D;&#x3D;，不依赖于OVS，控制器通过向交换机下发流表规则来控制数据流向。</p>
+<p>数据库：<strong>ovsdb-server</strong>   用于整个OVS的配置信息，包括接口、交换内容、VLAN等，ovs-vswitchd根据这些配置信息工作。</p>
+<img src="/2022/03/12/Network/431521-20171224102317818-1090106576.png" srcset="/img/loading.gif" lazyload alt="img " style="zoom:130%;">
+
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/bakari/p/8097478.html">OVS架构</a></p>
+<ul>
+<li><p>数据面以&#x3D;&#x3D;用户态的ovs-vswitchd和内核态的datapath&#x3D;&#x3D;为主的转发模块。以及与之相关联的数据库模块ovsdb-server</p>
+</li>
+<li><p>控制面由ovs-ofctl模块负责，基于OpenFlow协议与数据面进行交互。</p>
+</li>
+<li><p>管理面由各种工具来负责：</p>
+<ul>
+<li>ovs-ofctl：控制面模块，显示交换机的当前状态，包括功能、配置和表中的项</li>
+<li>ovs-dpctl：配置交换机的内核模块datapath，可以创建修改和删除datapath，单个机器上datapath最多256个，一条datapath对应一个虚拟网络设备</li>
+<li>ovs-appctl：艰巨ovs-ofctl和ovs-dpctl的功能</li>
+<li>ovs-vsctl：查询和更新ovs-vswitchd的配置，网桥、端口、协议等相关的命令由其完成，还负责和ovsdb-server相关的数据库操作</li>
+</ul>
+</li>
+</ul>
+<p>OVS源码结构：</p>
+<img src="/2022/03/12/Network/431521-20171224102359443-1589744207.png" srcset="/img/loading.gif" lazyload alt="img " style="zoom:80%;">
+
+<p>从图中可以看出 OVS 的分层结构，最上层 vswitchd 主要与 ovsdb 通信，做配置下发和更新等，中间层是 ofproto ，用于和 OpenFlow 控制器通信，并基于下层的 ofproto provider 提供的接口，完成具体的设备操作和流表操作等工作。</p>
+<p>dpif 层：用户空间数据转发路径的实现</p>
+<p>netdev 层实现了对网络设备（如 Ethernet）的抽象，基于 netdev provider 接口实现多种不同平台的设备，如 Linux 内核的 system, tap, internal 等，dpdk 系的 vhost, vhost-user 等，以及隧道相关的 gre, vxlan 等。</p>
+<img src="/2022/03/12/Network/431521-20171224102412506-951322711.png" srcset="/img/loading.gif" lazyload alt="img " style="zoom:70%;">
+
+<p>1）ovs 的 datapath 接收到从 ovs 连接的某个网络端口发来的数据包，<strong>从数据包中提取源&#x2F;目的 IP、源&#x2F;目的 MAC、端口等信息。</strong></p>
+<p>2）ovs 在内核态查看流表结构（通过 hash），如果命中，则快速转发。</p>
+<p>3）如果没有命中，内核态不知道如何处置这个数据包，所以，通过 &#x3D;&#x3D;netlink upcall&#x3D;&#x3D; 机制从内核态通知用户态，发送给 ovs-vswitchd 组件处理。</p>
+<p>4）ovs-vswitchd 查询<strong>用户态精确流表和模糊流表</strong>，如果还不命中，在 SDN 控制器接入的情况下，经过 OpenFlow 协议，通告给控制器，<strong>由控制器处理</strong>。</p>
+<p>5）如果模糊命中， ovs-vswitchd 会同时刷新用户态精确流表和内核态精确流表，如果精确命中，则只更新内核态流表。</p>
+<p>6）刷新后，重新把该数据包注入给内核态 datapath 模块处理。</p>
+<p>7）datapath 重新发起选路，查询内核流表，匹配；报文转发，结束。</p>
+<p>FlowTable流表：由很多个流表项组成，每个流表项就是一个转发规则，进入交换机的数据包通过查询流表来获得转发的目的端口。由&#x3D;&#x3D;头域、计数器和操作&#x3D;&#x3D;组成，头域是个十元组，是流表项的标识；计数器用来计算流表项的统计数据；操作标明了与该流表项匹配的[数据包应该执行的操作。【这儿是有很多个FlowTable吗？我可以自己选择，或者可以自己定义流表吗？即不根据IP，甚至不根据MAC，只根据自己定义的端口号进行转发？（还是说可以根据MAC来转发，而不根据IP）】</p>
+<p>也就是说，OpenFlow交换机相较于传统网络中的交换机，是一个比较模糊的概念，不区分交换和路由，</p>
+<img src="/2022/03/12/Network/image-20211118153220242.png" srcset="/img/loading.gif" lazyload alt="image-20211118153220242" style="zoom:80%;">
+
+<h2 id="2-2-OVS源码解读"><a href="#2-2-OVS源码解读" class="headerlink" title="2.2 OVS源码解读"></a>2.2 OVS源码解读</h2><p>源码解读：OpenvSwitch2.4.0+ubuntu14.04</p>
+<p>第一个是&#x3D;&#x3D;datapath.c&#x3D;&#x3D;中的ovs_dp_process_received_packet(struct vport<em>p, struct sk_buff</em>skb)函数内添加相应的代码来达到自己的目的，因为对于每个数据包来说这个函数都是必经之地；</p>
+<p>第二个就是自己去设计自己的流表了；</p>
+<p>第三个和第二个是相关联的，就是根据流表来设计自己的action，完成自己想要的功能。</p>
+<h2 id="2-3-传统OVS和OVS-DPDk"><a href="#2-3-传统OVS和OVS-DPDk" class="headerlink" title="2.3  传统OVS和OVS+DPDk"></a>2.3  传统OVS和OVS+DPDk</h2><p>传统OVS</p>
+<img src="/2022/03/12/Network/20181022221037460" srcset="/img/loading.gif" lazyload alt="img " style="zoom:130%;">
+
+<p>ovsdb-sever: OVS的数据库服务器，用来存储虚拟交换机的配置信息。它于manager和ovs-vswitchd交换信息使用了OVSDB(JSON-RPC)的方式。</p>
+<p>ovs-vswitchd: OVS的核心部件，实现switch的daemon，包括一个支持流交换的Linux内核模块；和上层controller通信遵从OPENFLOW协议，与ovsdb-server通信使用OVSDB协议，和内核模块通过netlink通信，支持多个独立的datapath（网桥）。</p>
+<p>ovs kernel module: OVS的内核模块，处理包交换和隧道，缓存flow，如果在内核的缓存中找到转发规则则转发，否则发向用户空间去处理。</p>
+<img src="/2022/03/12/Network/20200418213801334.png" srcset="/img/loading.gif" lazyload alt="传统OVS" style="zoom:80%;">
+
+
+
+<p>OVS+DPDK</p>
+<img src="/2022/03/12/Network/2020041823075262.png" srcset="/img/loading.gif" lazyload alt="OVS+DPDK" style="zoom:80%;">
+
+
+
+<img src="/2022/03/12/Network/20170908213017326" srcset="/img/loading.gif" lazyload alt="ovs+dpdk" style="zoom:80%;">
+
+<p>用户态进程直接接管网卡收发数据，采用“<strong>IO独占核</strong>”技术，即每个端口分配一个核专门用于数据收发，轮询式处理方式代替中断式处理，显著提高IO性能。使用用户空间作为datapath，流表转发发生在用户态。</p>
+<img src="/2022/03/12/Network/1060878-20210509130057172-1672367703.png" srcset="/img/loading.gif" lazyload alt="img" style="zoom:67%;">
+
+<p>OVS+DPDK的转发流程：</p>
+<p>1.OVS的ovs-vswitchd接收到从OVS连接的某个网络端口发来的数据包，从数据包中提取源&#x2F;目的IP、源&#x2F;目的MAC、端口等信息。<br>2.OVS在<strong>用户态</strong>查看精确流表和模糊流表，如果命中，则直接转发。<br>3.如果还不命中，在SDN控制器接入的情况下，经过OpenFlow协议，通告给控制器，由控制器处理。<br>4.控制器下发新的流表，该数据包重新发起选路，匹配；报文转发，结束。</p>
+<h2 id="2-4-dpdkvhostuser"><a href="#2-4-dpdkvhostuser" class="headerlink" title="2.4 dpdkvhostuser"></a>2.4 dpdkvhostuser</h2><p><strong>vhost-user库</strong>：该库内置于DPDK中，是vhost协议的用户空间实现，可让qemu将virtio设备数据包处理工作卸载到任何<strong>DPDK应用程序</strong>（例如Open vSwitch）。vhost-user库定义了通过unix套接字发送的消息结构。</p>
+<p>vhost-user库允许主数据库通过执行以下重要操作来配置数据平面卸载：</p>
+<ol>
+<li><p>功能协商：virtio功能和特定vhost-user的功能都以类似的方式协商：首先，QEMU“获取”处理程序支持的功能的位掩码，然后“设置” 其与自身支持功能的子集。</p>
+</li>
+<li><p>内存区域配置：QEMU设置内存映射区域，以便处理程序【这里是指<strong>DPDK应用程序</strong>】可以对它们进行mmap()。</p>
+</li>
+<li><p>Vring配置：QEMU设置要使用的虚拟队列数量及其在内存区域中的地址。请注意，vhost-user支持多队列，因此可以配置多个虚拟队列以提高性能。</p>
+</li>
+<li><p>发送KICK和CALL文件描述符：通常，使用irqfd和ioeventfd机制。</p>
+</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://www.freesion.com/article/3861259495/">参考1：基于VIRTIO、VHOST和OVS-DPDK的容器数据通道</a></p>
+<p>virtio本质上是一个基于内存共享的包收发机制。在虚拟机环境中，qemu-kvm将整个虚拟机的物理内存分布共享给vhost后端；而在容器环境中，由于容器是一个进程，只能共享部分由DPDK初始化的hugepage内存给后端vhost，所以容器的virtio DPDK也只有借助这个区域进行基于共享内存的数据包收发，virtio对于容器内DPDK支持的主要改动也就在这边。最终目的就是virtio-user能虚拟出一个能够被容器内DPDK所管控的para-virtualization PCI设备。经过改进后的virtio在容器模式内可将以如下方式<strong>加速容器数据通路</strong>：</p>
+<img src="/2022/03/12/Network/70.png" srcset="/img/loading.gif" lazyload alt="img " style="zoom:30%;">
+
+<p>容器内的DPDK PMD(Poll Mode Driver，基于<strong>用户态的轮询机制</strong>的驱动)借助这个改进的<strong>virtio-user</strong>直接使用宿主机上OVS-DPDK建立的dpdkvhostuser port作为其端口(对应的<strong>unix socket file</strong>用于进行<strong>控制面消息交互</strong>)</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_37097605/article/details/101514202">参考2：利用DPDK加速容器网络</a></p>
+<p>在vswitch模型中，和虚拟机类似，容器中的网络流都汇集到经过DPDK加速的vSwitch（如OVS-DPDK、VPP）中。容器和vSwitch之间的通信通过DPDK里面虚拟设备virtio_user来进行（该设备主要提供了一种高速的进程间通信机制）。</p>
+<img src="/2022/03/12/Network/105c69035413b09fb429ed4022a6e0d8.png" srcset="/img/loading.gif" lazyload alt="0?wx_fmt=png" style="zoom:100%;">
+
+<h1 id="四、OVS常用操作"><a href="#四、OVS常用操作" class="headerlink" title="四、OVS常用操作"></a>四、OVS常用操作</h1><h2 id="4-1-安装OVS"><a href="#4-1-安装OVS" class="headerlink" title="4.1 安装OVS"></a>4.1 安装OVS</h2><figure class="highlight awk"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></div></td><td class="code"><pre><code class="hljs awk">安装方法一<br>yum -y install make gcc openssl-devel autoconf automake rpm-build redhat-rpm-config<br>yum -y install python-devel openssl-devel kernel-devel kernel-debug-devel libtool wget<br>yum groupinstall <span class="hljs-string">&quot;Development Tools&quot;</span><br><br>tar zxvf openvswitch-<span class="hljs-number">2.8</span>.<span class="hljs-number">1</span>.tar.gz<br>cd openvswitch-<span class="hljs-number">2.8</span>.<span class="hljs-number">1</span><br><span class="hljs-regexp">//</span>希望将文件安装到<span class="hljs-regexp">/usr，而不是/u</span>sr<span class="hljs-regexp">/local,加上--prefix=/u</span>sr<br>.<span class="hljs-regexp">/configure --prefix=/u</span>sr --with-linux=<span class="hljs-regexp">/lib/m</span>odules<span class="hljs-regexp">/$(uname -r)/</span>build<br><br>make <br>make install<br>modprobe gre &amp;&amp; modprobe nf_conntrack &amp;&amp; modprobe nf_nat &amp;&amp; modprobe nf_defrag_ipv6 &amp;&amp; modprobe libcrc32c &amp;&amp; modprobe nf_nat_ipv6 &amp;&amp; modprobe nf_nat_ipv4 &amp;&amp; modprobe tunnel6<br>insmod datapath<span class="hljs-regexp">/linux/</span>openvswitch.ko<br>make modules_install<br><span class="hljs-regexp">//</span>加载所需内核模块<br>modprobe openvswitch<br><span class="hljs-regexp">//</span>查看加载的内核模块<br>lsmod | grep openvswitch<br><br>vim <span class="hljs-regexp">/etc/</span>profile<br>export PATH=<span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/ovs/</span>share<span class="hljs-regexp">/openvswitch/</span>scripts:<span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/ovs/</span>bin:<span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/ovs/</span>sbin:<span class="hljs-variable">$PATH</span><br>source <span class="hljs-regexp">/etc/</span>profile<br><br>================================创建数据库====================================<br><span class="hljs-regexp">//</span>创建必要的文件夹<br>mkdir -p <span class="hljs-regexp">/usr/</span>etc/openvswitch<br>mkdir -p <span class="hljs-regexp">/usr/</span>var<span class="hljs-regexp">/run/</span>openvswitch<br>mkdir -p <span class="hljs-regexp">/usr/</span>var<span class="hljs-regexp">/log/</span>openvswitch<br>进入ovs的原文件：ovsdb-tool create <span class="hljs-regexp">/usr/</span>etc<span class="hljs-regexp">/openvswitch/</span>conf.db vswitchd/vswitch.ovsschema<br><span class="hljs-regexp">//</span>数据库配置<br>ovsdb-server --remote=punix:<span class="hljs-regexp">/usr/</span>var<span class="hljs-regexp">/run/</span>openvswitch/db.sock --remote=db:Open_vSwitch,Open_vSwitch,manager_options --private-key=db:Open_vSwitch,SSL,private_key --certificate=db:Open_vSwitch,SSL,certificate --bootstrap-ca-cert=db:Open_vSwitch,SSL,ca_cert --pidfile --detach<br><br><span class="hljs-regexp">//</span>初始化数据库<br>ovs-vsctl --no-wait init<br><span class="hljs-regexp">//</span>启动ovs进程<br>ovs-vswitchd --pidfile --detach --log-file<br><br><br><span class="hljs-regexp">//</span>或者试一下能否启动进程<br><span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/openvswitch/</span>scripts/ovs-ctl start<br></code></pre></td></tr></table></figure>
+
+<img src="/2022/03/12/Network/image-20211207103928962.png" srcset="/img/loading.gif" lazyload alt="image-20211207103928962" style="zoom:80%;">
+
+<p><strong>重新编译openvswitch</strong></p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs gradle">#remove the old ovs<br>kill `cd <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/var/</span>run/openvswitch &amp;&amp; cat ovsdb-server.pid ovs-vswitchd.pid` <br>yum remove openvswitch-common openvswitch-datapath-dkms openvswitch-controller openvswitch-pki openvswitch-<span class="hljs-keyword">switch</span> -y<br>ovs-dpctl del-dp ovs-system<br>rmmod openvswitch<br><br>#install the <span class="hljs-keyword">new</span> ovs<br>tar zxvf openvswitch-<span class="hljs-number">2.16</span>.<span class="hljs-number">0</span>.tar.gz<br>cd openvswitch-<span class="hljs-number">2.16</span>.<span class="hljs-number">0</span><br>.<span class="hljs-regexp">/configure --prefix=/u</span>sr --with-linux=<span class="hljs-regexp">/lib/m</span>odules<span class="hljs-regexp">/`uname -r`/</span>build<br>makemake<br>make install <br>modprobe gre<br>insmod datapath<span class="hljs-regexp">/linux/</span>openvswitch.ko<br>make modules_install<br>modprobe openvswitch<br><br>#disable openvswitch controller<br><span class="hljs-regexp">/etc/i</span>nit.d/openvswitch-controller stop<br>update-rc.d openvswitch-controller disable<br><br>#start the <span class="hljs-keyword">new</span> ovs<br><span class="hljs-regexp">/etc/i</span>nit.d/openvswitch-<span class="hljs-keyword">switch</span> start<br>ovsdb-tool create <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/etc/</span>openvswitch<span class="hljs-regexp">/conf.db /u</span>sr<span class="hljs-regexp">/local/</span>share<span class="hljs-regexp">/openvswitch/</span>vswitch.ovsschema<br>ovsdb-server --remote=punix:<span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/var/</span>run<span class="hljs-regexp">/openvswitch/</span>db.sock --remote=db:Open_vSwitch,Open_vSwitch,manager_options --pidfile --detach --log-<span class="hljs-keyword">file</span><br>ovs-vsctl --no-wait init<br>ovs-vswitchd --pidfile --detach<br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">//</span>安装依赖包（在非root权限下进行）<br>yum -y install make gcc openssl-devel autoconf automake rpm-build redhat-rpm-config<br>yum -y install python-devel openssl-devel kernel-devel kernel-debug-devel libtool wget<br>yum groupinstall <span class="hljs-string">&quot;Development Tools&quot;</span><br><br><span class="hljs-regexp">//</span>预处理过程<br>mkdir -p ~<span class="hljs-regexp">/rpmbuild/</span>SOURCES<br>wget http:<span class="hljs-regexp">//</span>openvswitch.org<span class="hljs-regexp">/releases/</span>openvswitch-<span class="hljs-number">2.5</span>.<span class="hljs-number">0</span>.tar.gz<br>cp openvswitch-<span class="hljs-number">2.5</span>.<span class="hljs-number">0</span>.tar.gz ~<span class="hljs-regexp">/rpmbuild/</span>SOURCES/<br>tar xfz openvswitch-<span class="hljs-number">2.5</span>.<span class="hljs-number">0</span>.tar.gz<br>sed <span class="hljs-string">&#x27;s/openvswitch-kmod, //g&#x27;</span> openvswitch-<span class="hljs-number">2.5</span>.<span class="hljs-number">0</span><span class="hljs-regexp">/rhel/</span>openvswitch.spec &gt; openvswitch-<span class="hljs-number">2.5</span>.<span class="hljs-number">0</span><span class="hljs-regexp">/rhel/</span>openvswitch_no_kmod.spec<br><br><span class="hljs-regexp">//</span>构建RPM包<br>rpmbuild -bb --nocheck ~<span class="hljs-regexp">/openvswitch-2.5.0/</span>rhel/openvswitch_no_kmod.spec<br>可能出现以下错误：<br>error: File <span class="hljs-regexp">/home/</span>ovswitch<span class="hljs-regexp">/rpmbuild/</span>SOURCES/openvswitch-<span class="hljs-number">2.5</span>.<span class="hljs-number">0</span>.tar.gz: No such file or directory<br>解决办法：cp openvswitch-<span class="hljs-number">2.5</span>.<span class="hljs-number">0</span>.tar.gz rpmbuild/SOURCES<br><br><span class="hljs-regexp">//</span>安装<br>yum localinstall ~<span class="hljs-regexp">/rpmbuild/</span>RPMS<span class="hljs-regexp">/x86_64/</span>openvswitch-<span class="hljs-number">2.5</span>.<span class="hljs-number">0</span>-<span class="hljs-number">1</span>.x86_64.rpm<br><br><span class="hljs-regexp">//</span>卸载<br><span class="hljs-regexp">//</span>首先移除所有的桥<br>yum -y remove openvswitch<br><br>我们可以通过如下命令查看所安装OVS的版本号。<br>[root@localhost ~]<span class="hljs-comment"># ovs-vsctl --version</span><br>ovs-vsctl (Open vSwitch) <span class="hljs-number">2.5</span>.<span class="hljs-number">0</span><br>Compiled May <span class="hljs-number">24</span> <span class="hljs-number">2017</span> <span class="hljs-number">08</span>:<span class="hljs-number">34</span>:<span class="hljs-number">21</span><br>DB Schema <span class="hljs-number">7.12</span>.<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/2022/03/12/Network/image-20211129164150144.png" srcset="/img/loading.gif" lazyload alt="image-20211129164150144 "></p>
+<p><strong>安装dpdk + ovs</strong></p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">//</span>路径一定要正确！！！<br>.<span class="hljs-regexp">/configure  --with-dpdk=/</span>root<span class="hljs-regexp">/dpdk-stable-19.11.2/</span>x86_64-native-linuxapp-gcc/ CFLAGS=<span class="hljs-string">&quot;-g -0fast&quot;</span><br>make<br>make install<br><br>mkdir -p <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/etc/</span>openvswitch<br>mkdir -p <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/var/</span>run/openvswitch<br>mkdir -p <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/var/</span>log/openvswitch<br></code></pre></td></tr></table></figure>
+
+<img src="/2022/03/12/Network/image-20211223153025770.png" srcset="/img/loading.gif" lazyload alt="image-20211223153025770 " style="zoom:67%;">
+
+<h2 id="4-2-OVS常用命令"><a href="#4-2-OVS常用命令" class="headerlink" title="4.2 OVS常用命令"></a>4.2 OVS常用命令</h2><figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs smali">1.添加网桥：ovs-vsctl<span class="hljs-built_in"> add-br </span>交换机名 <br>2.删除网桥：ovs-vsctl del-br 交换机名 <br>3.添加端口：ovs-vsctl<span class="hljs-built_in"> add-port </span>交换机名 端口名（网卡名） <br>4.删除端口：ovs-vsctl del-port 交换机名 端口名（网卡名） <br>5.连接控制器：ovs-vsctl set-controller 交换机名 tcp:IP地址:端口号 <br>6.断开控制器：ovs-vsctl del-controller 交换机名 <br>7.列出所有网桥：ovs-vsctl list-br <br>8.列出网桥中的所有端口：ovs-vsctl list-ports 交换机名 <br>9.列出所有挂接到网卡的网桥：ovs-vsctl port-to-br 端口名（网卡名） <br>10.查看open vswitch的网络状态：ovs-vsctl show <br>11.查看 Open vSwitch 中的端口信息（交换机对应的 dpid，以及每个端口的 OpenFlow 端口编号，端口名称，当前状态等等）：ovs-ofctl show 交换机名 <br>12.修改dpid：ovs-vsctl set<span class="hljs-keyword"> bridge</span> 交换机名 other_config:datapath-id=新DPID <br>13.修改端口号：ovs-vsctl set Interface 端口名 ofport_request=新端口号 <br><br>ovs-ofctl show ovs-switch   查看ofport编号<br>14.查看交换机中的所有 Table：ovs-ofctl dump-tables ovs-switch <br>15.查看交换机中的所有流表项：ovs-ofctl dump-flows ovs-switch <br>16.删除编号为 100 的端口上的所有流表项：ovs-ofctl del-flows ovs-switch in_port=100 <br>17.添加流表项（以“添加新的 OpenFlow 条目，修改从端口 p0 收到的数据包的源地址为 9.181.137.1”为例）： <br>ovs-ofctl<span class="hljs-built_in"> add-flow </span>s1 <br>ovs-ofctl<span class="hljs-built_in"> add-flow </span>ovs-switch “priority=1 idle_timeout=0,in_port=100,actions=mod_nw_src:9.181.137.1,normal” <br>ovs-ofctl<span class="hljs-built_in"> add-flow </span>s1 <span class="hljs-string">&quot;in_port=1,actions=output:2&quot;</span><br>18.查看 OVS 的版本信息：ovs-appctl --version <br>19.查看 OVS 支持的 OpenFlow 协议的版本：ovs-ofctl --version<br><br>20.**和docker相关**：<br>ovs-docker<span class="hljs-built_in"> add-port </span>BRIDGE INTERFACE CONTAINER<br>ovs-docker del-port BRIDGE INTERFACE CONTAINER<br><br>//但是如果设备是docker的网卡，那么虚拟出来的网卡不叫eth1（取的名字）这之间的映射关系是什么？<br>ovs-vsctl get interface 接口名 ofport<br>ovs-vsctl list interface 接口名 | grep ofport<br>ovs-vsctl -- set interface 接口名 ofport_request=5<br></code></pre></td></tr></table></figure>
+
+<h2 id="4-3-printk的查看"><a href="#4-3-printk的查看" class="headerlink" title="4.3 printk的查看"></a>4.3 printk的查看</h2><p>方法1.直接在终端查询日志</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> /var/log/messages<br></code></pre></td></tr></table></figure>
+
+<p>方法2.直接在一个终端执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> /proc/kmsg<br>//查看日志等级<br>//分别表示当前控制台日志级别、未明确指定日志级别的默认消息日志级别、最小（最高）允许设置的控制台日志级别、引导时默认的日志级别。<br><span class="hljs-built_in">cat</span> /proc/sys/kernel/printk<br><span class="hljs-built_in">echo</span> 7 4 1 7 &gt; /proc/sys/kernel/printk<br></code></pre></td></tr></table></figure>
+
+<p>打印出来的信息</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-symbol">&lt;6&gt;</span> device s1 entered promiscuous <span class="hljs-keyword">mode</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="4-4-Flow-Table"><a href="#4-4-Flow-Table" class="headerlink" title="4.4 Flow Table"></a>4.4 Flow Table</h2><p><img src="/2022/03/12/Network/v2-b846eca8a0535aab5698183fb05e5efd_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<img src="/2022/03/12/Network/v2-9b885ca94c4f33adeaa7df5578239c5a_720w.jpg" srcset="/img/loading.gif" lazyload alt="img " style="zoom:80%;">
+
+<p>Add each flow entry to switch’s tables.  Each flow specification (e.g.,  each  line  in file) may &#x3D;&#x3D;start with add, modify, delete,modify_strict, or delete_strict&#x3D;&#x3D; keyword  to  specify  whether  a flow  is to be added, modified, or deleted, and whether the modify or delete is strict or not.  For backwards  compatibility  a flow specification without one of these keywords is treated as a flow add.  All flow mods are executed in the order specified. </p>
+<h1 id="五、docker容器"><a href="#五、docker容器" class="headerlink" title="五、docker容器"></a>五、docker容器</h1><p>docker安装</p>
+<img src="/2022/03/12/Network/image-20211123155946890.png" srcset="/img/loading.gif" lazyload alt="image-20211123155946890 " style="zoom:67%;">
+
+<h2 id="1-案例"><a href="#1-案例" class="headerlink" title="1. 案例"></a>1. 案例</h2><p><strong>1.1 目的</strong>：实现docker容器间不通过ip、mac层协议互访</p>
+<p><strong>1.2 手段</strong></p>
+<p><strong>1、古老的–link（兼容老版本，不建议使用）</strong></p>
+<p><strong>源容器</strong></p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs applescript">docker <span class="hljs-built_in">run</span> -d <span class="hljs-comment">--name selenium_hub selenium/hub</span><br></code></pre></td></tr></table></figure>
+
+<p>创建并启动名为selenium_hub的容器。</p>
+<p><strong>接收容器</strong></p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">docker run -d --name <span class="hljs-keyword">node</span> <span class="hljs-title">--link</span> selenium_hub:hub selenium/<span class="hljs-keyword">node</span><span class="hljs-title">-chrome-debug</span><br></code></pre></td></tr></table></figure>
+
+<p>创建并启动名为node的容器，并把该容器和名为selenium_hub的容器链接起来。其中：</p>
+<p>–link selenium_hub:hub</p>
+<p>使用名字docker通过DNS自动解析</p>
+<p><strong>2、 docker0</strong></p>
+<p><strong>3、自定义 Docker 网络 docker network create-d bridge</strong></p>
+<p><strong>4、创建点到点连接</strong></p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli"><span class="hljs-string">//</span>这里<span class="hljs-params">--rm</span>指容器完成之后自动删除，把<span class="hljs-params">--rm</span>给去掉<br>$ docker run -itd <span class="hljs-params">--net=host</span> busybox<br>root@1f1f4c1f931a:/<span class="hljs-comment">#</span><br>$ docker run -itd <span class="hljs-params">--net=host</span> busybox<br>root@12e343489d2f:/<span class="hljs-comment">#</span><br><br>docker run -it <span class="hljs-params">--name</span> vm3 <span class="hljs-params">--net</span> container<span class="hljs-function">:vm1</span> ubuntu<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs tcl">分别查看两个container进程的<span class="hljs-keyword">pid</span><br>$ docker inspect -f &#x27;&#123;&#123;.State.Pid&#125;&#125;&#x27; bb1<br><span class="hljs-number">3605</span><br>$ docker inspect -f &#x27;&#123;&#123;.State.Pid&#125;&#125;&#x27; bb2<br><span class="hljs-number">3670</span><br><br>新建/var/run/netns文件夹，-p表示如果目录存在，也不报错。其实要是用过linux的ip netns 命令，上面的文件夹就已经创建了。ip netns 命令创建的<span class="hljs-keyword">namespace</span>会出现在这个目录下。<br>$ sudo mkdir -p /var/run/netns<br>docker创建的<span class="hljs-keyword">namespace</span>会出现在/<span class="hljs-keyword">proc</span>/&#123;<span class="hljs-keyword">pid</span>&#125;/ns/net 目录下，然而如果ip netns 要操作非ip netns 创建的<span class="hljs-keyword">namespace</span>就需要到/var/run/netns/ 新建链接到相应的要操作的<span class="hljs-keyword">namespace</span>。<br>ln -s 就是链接到docker创建的<span class="hljs-keyword">namespace</span><br>//这一步都是在主机里做的<br>$ sudo ln -s /<span class="hljs-keyword">proc</span>/3605/ns/net /var/run/netns/3605<br>$<span class="hljs-title"> sudo</span> ln -s /<span class="hljs-keyword">proc</span>/3670/ns/net /var/run/netns/3670<br>//ip<span class="hljs-title"> link</span> add<span class="hljs-title"> type</span> veth 可以创建一对veth<span class="hljs-title"> pair</span> 出来，分别放到两个namespace中，这样两个namespace就可以进行通信了。<br>$<span class="hljs-title"> sudo</span> ip<span class="hljs-title"> link</span> add<span class="hljs-title"> test_A</span> type<span class="hljs-title"> veth</span> peer<span class="hljs-title"> name</span> test_B<br><br>//把A加入到namespace 6146<br>$<span class="hljs-title"> sudo</span> ip<span class="hljs-title"> link</span> set<span class="hljs-title"> test_A</span> netns 3605<br>//ip<span class="hljs-title"> netns</span> exec 6146 是到相应的namespace中去执行命令，ip<span class="hljs-title"> addr</span> add<span class="hljs-title"> ip/mask</span> dev $(namespace) 是为namespace添加ip地址。并分配给接口A<br>$<span class="hljs-title"> sudo</span> ip<span class="hljs-title"> netns</span> exec 3605<span class="hljs-title"> ip</span> addr<span class="hljs-title"> add</span> 10.1.1.1/32<span class="hljs-title"> dev</span> test_A<br>$<span class="hljs-title"> sudo</span> ip<span class="hljs-title"> netns</span> exec 3605<span class="hljs-title"> ip</span> link<span class="hljs-title"> set</span> test_A<span class="hljs-title"> up</span><br>$<span class="hljs-title"> sudo</span> ip<span class="hljs-title"> netns</span> exec 3605<span class="hljs-title"> ip</span> route<span class="hljs-title"> add</span> 10.1.1.2/32<span class="hljs-title"> dev</span> test_A<br><br>$<span class="hljs-title"> sudo</span> ip<span class="hljs-title"> link</span> set<span class="hljs-title"> test_B</span> netns 3670<br>$<span class="hljs-title"> sudo</span> ip<span class="hljs-title"> netns</span> exec 3670<span class="hljs-title"> ip</span> addr<span class="hljs-title"> add</span> 10.1.1.2/32<span class="hljs-title"> dev</span> test_B<br>$<span class="hljs-title"> sudo</span> ip<span class="hljs-title"> netns</span> exec 3670<span class="hljs-title"> ip</span> link<span class="hljs-title"> set</span> test_B<span class="hljs-title"> up</span><br>$<span class="hljs-title"> sudo</span> ip<span class="hljs-title"> netns</span> exec 3670<span class="hljs-title"> ip</span> route<span class="hljs-title"> add</span> 10.1.1.1/32<span class="hljs-title"> dev</span> test_B<br></code></pre></td></tr></table></figure>
+
+<img src="/2022/03/12/Network/image-20211125141426185.png" srcset="/img/loading.gif" lazyload alt="image-20211125141426185 " style="zoom:80%;">
+
+<p>其中test_A是自己配出来的，只是没有端口号，可以根据ip进行ping通10.1.1.2</p>
+<p><a target="_blank" rel="noopener" href="https://anqixiang.blog.csdn.net/article/details/96286749?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-3.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-3.nonecase">链接1</a></p>
+<h2 id="2-docker指令"><a href="#2-docker指令" class="headerlink" title="2. docker指令"></a>2. docker指令</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">//</span>启动docker<br>systemctl start docker<br><span class="hljs-regexp">//</span>运行docker容器：<br>docker run [options] image [command] [args…]<br>docker run -itd --net=host --privileged=true --name=host1 ubuntu<br><span class="hljs-regexp">//</span>以centos为镜像创建容器<br>docker run -it --name vm3 --net container:vm1 ubuntu<br><span class="hljs-regexp">//</span>这里privileged让用户权限提升<br><span class="hljs-regexp">//</span>进入docker容器<br>docker exec -it <span class="hljs-number">067</span> <span class="hljs-regexp">/bin/</span>bash<br><span class="hljs-regexp">//</span>启动docker容器<br>docker start 容器名<br><span class="hljs-regexp">//</span>删除docker容器<br>docker rm 容器id<br><span class="hljs-regexp">//</span>删除docker镜像<br>docker rmi 镜像名<br>=-====================================抓包==================================================<br>docker inspect <span class="hljs-variable">$container_id</span>|grep Pid<br>获取到pid后，执行<br>nsenter -t <span class="hljs-variable">$pid</span> -n tcpdump -i ethX -n<br><br>====================docker+ovs=====================<br>ovs-docker add-port s1 eth1 host1<br><span class="hljs-regexp">//</span>手动添加一条流表使host1和host2无法通行，这条流表对<span class="hljs-number">1</span>端口号收到的数据报执行丢弃动作<br>sudo ovs-ofctl add-flow s1 <span class="hljs-string">&quot;in_port=1,actions=drop&quot;</span><br><span class="hljs-regexp">//</span>删除这条流表<br>sudo ovs-ofctl del-flows s1 <span class="hljs-string">&quot;in_port=1&quot;</span><br><br><span class="hljs-regexp">//</span>docker内修改ip<br>ifconfig ethX <span class="hljs-number">172.16</span>.<span class="hljs-number">0.1</span>/<span class="hljs-number">24</span><br><br>注意：<br>使用busybox容器，必须要-itd，这样才能维持容器Up【如果没有-i，当没有和容器链接时，不会维持标准输入，sh退出，容器直接退出。】<br><br><span class="hljs-regexp">//</span>docker容器生成镜像<br><br></code></pre></td></tr></table></figure>
+
+<img src="/2022/03/12/Network/20191013101404753.png" srcset="/img/loading.gif" lazyload alt="docker run 命令解释" style="zoom:80%;">
+
+
+
+<p>node的网络配置信息：</p>
+<img src="/2022/03/12/Network/image-20211124212308772.png" srcset="/img/loading.gif" lazyload alt="image-20211124212308772 " style="zoom:80%;">
+
+
+
+<h1 id="六、安装dpdk-ovs-pktgen-vhostuser"><a href="#六、安装dpdk-ovs-pktgen-vhostuser" class="headerlink" title="六、安装dpdk+ovs+pktgen  vhostuser"></a>六、安装dpdk+ovs+pktgen  vhostuser</h1><p><strong>在docker容器里安装pktgen和testpmd</strong>   dpdk:17.11.6  openvswitch:2.9.0  lua:5.3.4   pktgen:3.4.4</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/cloudvtech/article/details/80492234">整体操作链接</a>、<a target="_blank" rel="noopener" href="https://blog.csdn.net/wh_computers/article/details/99407047">版本链接</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><code class="hljs java">=========================宿主机安装ovs的坑=========================<br><span class="hljs-comment">//掩码中的设置位表示创建了一个 pmd 线程并将其固定到相应的 CPU 内核。例如，要在核心 1 和 2 上运行 pmd 线程：</span><br>ovs-vsctl --no-wait init<br>ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=<span class="hljs-literal">true</span><br>ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-lcore-mask=<span class="hljs-number">0x7</span><br>ovs-vsctl set Open_vSwitch . other_config:pmd-cpu-mask=<span class="hljs-number">0x6</span><br>export DB_SOCK=/usr/local/<span class="hljs-keyword">var</span>/run/openvswitch/db.sock<br>utilities/ovs-ctl --no-ovsdb-server --db-sock=<span class="hljs-string">&quot;$DB_SOCK&quot;</span> start<br><br>在这之前，要先创建好宿主机的dpdk和ovs，且保证能正常运行<br>==========================安装docker容器，基于centos:<span class="hljs-number">7.3</span><span class="hljs-number">.1611</span>镜像==========================<br>docker run -ti --privileged -v /mnt/huge:/mnt/huge -v /usr/local/<span class="hljs-keyword">var</span>/run/openvswitch:/<span class="hljs-keyword">var</span>/run/openvswitch centos:<span class="hljs-number">7.3</span><span class="hljs-number">.1611</span><br>使用centos:<span class="hljs-number">7.3</span><span class="hljs-number">.1611</span>的镜像<br>先保证unama -r 和 ls /usr/src/kernels/输出结果相同，如果不同则<br>yum install -y <br>kernel kernel-devel <br>=======================================以下安装包十分重要=================================<br>yum install gcc make libpcap libpcap-devel numactl numactl-devel kmod <span class="hljs-type">sudo</span> <span class="hljs-variable">wget</span><br><span class="hljs-operator">=</span>======================================安装dpdk========================================<br>wget http:<span class="hljs-comment">//fast.dpdk.org/rel/dpdk-17.11.6.tar.gz</span><br>tar -xvf dpdk-<span class="hljs-number">17.11</span><span class="hljs-number">.6</span>.tar<br>=======================================安装lua=========================================<br>yum install readline-devel lua-devel gcc-g++ net-tools readline patch<br>wget http:<span class="hljs-comment">//www.lua.org/ftp/lua-5.3.4.tar.gz</span><br>tar -xvf lua-<span class="hljs-number">5.3</span><span class="hljs-number">.4</span>.tar.gz<br>cd lua-<span class="hljs-number">5.3</span><span class="hljs-number">.4</span><br>make linux<br>make install<br>make local<br><span class="hljs-comment">//如果lua -v没有改变，就将/usr/bin中的lua和luac删除，然后将/usr/local/bin中的lua和luac创建一个ln到/usr/bin中即可</span><br>cd /usr/bin<br>rm lua luac<br>ln -s /usr/local/bin/lua /usr/bin/lua<br>ln -s /usr/local/bin/luac /usr/bin/luac<br>=======================================安装pktgen=================================<br>wget https:<span class="hljs-comment">//git.dpdk.org/apps/pktgen-dpdk/snapshot/pktgen-dpdk-pktgen-3.4.4.tar.gz  --no-check-certificate</span><br>tar -xvf pktgen-dpdk-pktgen-<span class="hljs-number">3.4</span><span class="hljs-number">.4</span>.tar.gz<br>将lua安装包放进/pktgen-dpdk-pktgen-<span class="hljs-number">3.4</span><span class="hljs-number">.4</span>/lib/lua<br>make<br>ln -s $(pwd)/app/$RTE_TARGET/pktgen /usr/bin/pktgen<br>（启动的位置必须和pktgen.lua文件在同一目录下，不然会报错！，这里的启动位置为pktgen所在地）<br>    Copyright (c) &lt;<span class="hljs-number">2010</span>-<span class="hljs-number">2016</span>&gt;, Intel Corporation. All rights reserved.<br>Pktgen created by: Keith Wiles -- &gt;&gt;&gt; Powered by Intel® DPDK &lt;&lt;&lt;&lt;/div&gt;<br>Lua <span class="hljs-number">5.3</span><span class="hljs-number">.2</span>  Copyright (C) <span class="hljs-number">1994</span>-<span class="hljs-number">2015</span> Lua.org, PUC-Rio<br>lua-shell: <span class="hljs-keyword">module</span> <span class="hljs-string">&#x27;Pktgen&#x27;</span> not found:<br>no field <span class="hljs-keyword">package</span>.preload[<span class="hljs-string">&#x27;Pktgen&#x27;</span>]<br>no file <span class="hljs-string">&#x27;/usr/local/share/lua/5.3/Pktgen.lua&#x27;</span><br>no file <span class="hljs-string">&#x27;/usr/local/share/lua/5.3/Pktgen/init.lua&#x27;</span><br>no file <span class="hljs-string">&#x27;/usr/local/lib/lua/5.3/Pktgen.lua&#x27;</span><br>no file <span class="hljs-string">&#x27;/usr/local/lib/lua/5.3/Pktgen/init.lua&#x27;</span><br>no file <span class="hljs-string">&#x27;./Pktgen.lua&#x27;</span><br>no file <span class="hljs-string">&#x27;./Pktgen/init.lua&#x27;</span><br>no file <span class="hljs-string">&#x27;/usr/local/lib/lua/5.3/Pktgen.so&#x27;</span><br>no file <span class="hljs-string">&#x27;/usr/local/lib/lua/5.3/loadall.so&#x27;</span><br>no file <span class="hljs-string">&#x27;./Pktgen.so&#x27;</span><br>stack traceback:<br>[C]: in function <span class="hljs-string">&#x27;require&#x27;</span><br>pktgen: /home/dpdk/wenxingbeng/dpdk-<span class="hljs-number">16.04</span>/examples/pktgen-<span class="hljs-number">2.9</span><span class="hljs-number">.17</span>/app/lpktgenlib.c:<span class="hljs-number">3164</span>: _lua_openlib: Assertion `dolibrary(L, <span class="hljs-string">&quot;Pktgen&quot;</span>) == <span class="hljs-number">0</span><span class="hljs-string">&#x27; failed.</span><br><span class="hljs-string">=======================================启动pktgen===============================</span><br><span class="hljs-string">export DPDK_PARAMS=&quot;-c 0x0e --master-lcore 3 -n 1 --socket-mem 1024 \  </span><br><span class="hljs-string">  --file-prefix pktgen --no-pci \  </span><br><span class="hljs-string">  --vdev=virtio_user0,mac=00:00:00:00:00:00,path=/var/run/openvswitch/vhost-user0 \  </span><br><span class="hljs-string">  --vdev=virtio_user1,mac=00:00:00:00:00:01,path=/var/run/openvswitch/vhost-user1 &quot;  </span><br><span class="hljs-string">  //1.0, 2.1, 3.2                 - core 1 handles port 0 rx/tx,</span><br><span class="hljs-string">                                core 2 handles port 1 rx/tx</span><br><span class="hljs-string">                                core 3 handles port 2 rx/tx</span><br><span class="hljs-string"> export PKTGEN_PARAMS=&#x27;</span>-T -P -m <span class="hljs-string">&quot;0.0,4.1&quot;</span><span class="hljs-string">&#x27;  </span><br><span class="hljs-string">./app/x86_64-native-linuxapp-gcc/pktgen $DPDK_PARAMS -- $PKTGEN_PARAMS  </span><br><span class="hljs-string"></span><br><span class="hljs-string">=================================testpmd参数和运行===========================</span><br><span class="hljs-string">export DPDK_PARAMS=&quot;-c 0x0e -n 1 --socket-mem 1024 \</span><br><span class="hljs-string">  --file-prefix testpmd --no-pci \</span><br><span class="hljs-string">  --vdev=virtio_user2,mac=00:00:00:00:00:02,path=/var/run/openvswitch/vhost-user2 \</span><br><span class="hljs-string">  --vdev=virtio_user3,mac=00:00:00:00:00:03,path=/var/run/openvswitch/vhost-user3&quot;</span><br><span class="hljs-string">export TESTPMD_PARAMS=&quot;--burst=64 -i --disable-hw-vlan --txd=2048 --rxd=2048 -a --coremask=0x0c&quot;</span><br><span class="hljs-string">./build/app/testpmd $DPDK_PARAMS -- $TESTPMD_PARAMS</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="七、Linux常用命令"><a href="#七、Linux常用命令" class="headerlink" title="七、Linux常用命令"></a>七、Linux常用命令</h1><h2 id="7-1-和进程有关ps-process-status"><a href="#7-1-和进程有关ps-process-status" class="headerlink" title="7.1 和进程有关ps[process status]"></a>7.1 和进程有关ps[process status]</h2><p>ps -ef   查看所有正在运行的进程</p>
+<p>ps aux | grep amoeba  查看和amoeba有关的进程</p>
+<p>​    D 不可中断 uninterruptible sleep (usually IO)</p>
+<p>​    R 运行 runnable (on run queue)</p>
+<p>​    S 中断 sleeping</p>
+<p>​    T 停止 traced or stopped</p>
+<p>​    Z 僵死 a defunct (”zombie”) process</p>
+<h1 id="八、-TODOlist"><a href="#八、-TODOlist" class="headerlink" title="八、 TODOlist"></a>八、 TODOlist</h1><p>1、确定整体方案，vhostuser和dpdk ring的性能比较</p>
+<ul>
+<li>方案一、ovs-dpdk，创建dpdkvhostuser【和docker中的dpdk virtio内存共享】，在docker容器中安装dpdk，并将容器中的virtio-user绑定到ovs中的dpdkvhostuser端口上，以实现高速通信【一个卫星节点有四个端口，即四个容器，这么多容器都提前建好并绑定到ovs中吗？？？】</li>
+<li>方案二、基于dpdk ring【如何对ring进行动态配置？——端口和端口之间如果能够通信，那么就需要建立ring，否则就直接丢弃数据包，这里同样也需要基于端口创建容器，也是提前绑定吗？】</li>
+</ul>
+<p>2、 以小规模卫星节点为例【例如5个，即20个docker容器】进行仿真</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E8%99%9A%E6%8B%9F%E6%9C%BA/">虚拟机</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/openvswitch/">openvswitch</a>
+                    
+                      <a class="hover-with-bg" href="/tags/docker/">docker</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/16/MySQL_ferior/">
+                        <span class="hidden-mobile">MySQL高级笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"Uwont9NFwGQksbcDo3iLGJP4-gzGzoHsz","appKey":"pz0xMNx3jRHmteyd0eudDDqs","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://uwont9nf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          Fluid.plugins.initFancyBox('#valine .vcontent img:not(.vemoji)');
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
